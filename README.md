@@ -1,70 +1,74 @@
-# 🔮 ChurnInsight - Predicción de Cancelación de Clientes
+# 🔮 ChurnInsight - Predicción de Churn
 
-> **Hackathon Project:** Solución integral de IA para predecir la deserción de clientes (Churn) en servicios de suscripción.
+> **Hackathon Project:** Sistema integral para predecir la cancelación de clientes mediante Machine Learning.
 
-## 🏗️ Arquitectura del Sistema
-El proyecto sigue una arquitectura de microservicios en un **Monorepo**:
+## 🏗️ Arquitectura del Monorepo
 
-* **Frontend:** Vue.js 3 (Interfaz de usuario).
-* **Backend:** Java 21 (Spring Boot 3) + PostgreSQL (API REST y Lógica).
-* **Data Science:** Python 3.13 + FastAPI + Scikit-Learn (Modelo de Machine Learning).
-* **Infraestructura:** Docker Compose (Orquestación completa).
+Este proyecto integra tres tecnologías principales orquestadas con Docker:
+
+| Módulo | Tecnología | Puerto Local | Descripción |
+| :--- | :--- | :--- | :--- |
+| **Frontend** | Vue.js 3 + Vite | `5173` | Panel de control para usuarios. |
+| **Backend** | Java 21 (Spring Boot) | `8080` | API REST y lógica de negocio. |
+| **Data Science** | Python 3.13 (FastAPI) | `8000` | Microservicio de Machine Learning. |
+| **Database** | PostgreSQL 15 | `5432` | Persistencia de datos. |
 
 ---
 
-## 🚀 Guía de Inicio Rápido (Para Desarrolladores)
+## 🚀 Guía de Inicio para Desarrolladores
 
 ### Prerrequisitos
-* **Docker Desktop** (Corriendo).
-* **Java 21 JDK** (Para Backend).
-* **Python 3.13** (Para Data Science).
-* **Node.js 20+** (Para Frontend).
+* **Docker Desktop** (Debe estar corriendo).
+* **Git**.
+* *(Opcional para desarrollo local)*: Java 21 JDK, Python 3.13, Node.js 20+.
 
-### Opción A: "Modo Dios" (Recomendado para Desarrollo)
-*Combina la velocidad de tu PC con la facilidad de Docker para la Base de Datos.*
+### 🛠️ Opción A: Desarrollo Híbrido (Recomendado)
+*Usamos Docker solo para la Base de Datos y la IA, mientras corres Java y Vue en tu PC para mayor velocidad.*
 
-1.  **Levanta la Base de Datos y la IA:**
+1.  **Levanta la Infraestructura (BD + IA):**
     ```bash
     docker-compose up -d db ai-service
     ```
 
 2.  **Inicia el Backend (Java):**
-    * Abre una terminal en `/backend`.
+    * Entra a la carpeta: `cd backend`
     * Ejecuta: `.\mvnw spring-boot:run`
-    * *Nota: Se conectará automáticamente a la BD en Docker.*
+    * *Swagger/API:* http://localhost:8080/api/health
 
 3.  **Inicia el Frontend (Vue):**
-    * Abre una terminal en `/frontend`.
-    * Ejecuta: `pnpm install` y luego `pnpm dev`.
+    * Entra a la carpeta: `cd frontend`
+    * Instala: `pnpm install` (o npm install)
+    * Ejecuta: `pnpm dev`
+    * *Web:* http://localhost:5173
 
 ---
 
-### Opción B: "Modo Demo" (Todo en Docker)
-*Ideal para presentar el proyecto final sin instalar nada.*
+### 🐳 Opción B: Todo en Docker (Modo Demo)
+*Ideal para validar que todo funciona junto sin instalar nada extra.*
 
 1.  En la raíz del proyecto, ejecuta:
     ```bash
     docker-compose up --build
     ```
-2.  Espera a que todos los servicios arranquen.
+2.  Espera a que los logs se estabilicen.
 
 ---
-
-## 📡 Endpoints Principales
-
-| Servicio | URL Local | Descripción |
-| :--- | :--- | :--- |
-| **Frontend** | `http://localhost:5173` | Formulario de predicción. |
-| **Backend API** | `http://localhost:8080/api/health` | Verificar estado del sistema. |
-| **Swagger UI** | `http://localhost:8080/swagger-ui.html` | Documentación automática (Próximamente). |
-| **IA Docs** | `http://localhost:8000/docs` | Probador del modelo de Python. |
 
 ## 📂 Estructura del Proyecto
 
 ```text
 /churn-insight
 │
-├── /backend          # Spring Boot (Java)
-├── /frontend         # Vue.js (JavaScript)
-├── /data-science     # FastAPI (Python)
-└── docker-compose.yml
+├── /backend          # Spring Boot (Lógica de Negocio)
+│   ├── src/main/java # Código Java
+│   └── pom.xml       # Dependencias Maven
+│
+├── /frontend         # Vue.js (Interfaz de Usuario)
+│   └── src/          # Componentes y Vistas
+│
+├── /data-science     # Python (Inteligencia Artificial)
+│   ├── main.py       # Endpoint FastAPI
+│   └── requirements.txt
+│
+├── docker-compose.yml # Orquestador de servicios
+└── README.md          # Esta documentación
