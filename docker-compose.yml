@@ -1,0 +1,88 @@
+services:
+  # 1. Base de Datos (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: churn_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: churn_db
+      POSTGRES_USER: churn_user
+      POSTGRES_PASSWORD: churn_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - churn_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U churn_user -d churn_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Data Science (FastAPI - Python)
+  ai-service:
+    build:
+      context: ./data-science
+      dockerfile: Dockerfile
+    container_name: churn_ai_service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data-science:/app # Hot-reload: Si cambias código, se actualiza
+    networks:
+      - churn_network
+
+  # 3. Backend (Spring Boot - Java)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: churn_backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Configuración para conectar a Postgres dentro de Docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/churn_db
+      - SPRING_DATASOURCE_USERNAME=churn_user
+      - SPRING_DATASOURCE_PASSWORD=churn_password
+      # URL para conectar con Python
+      - AI_SERVICE_URL=http://ai-service:8000/predict
+    volumes:
+      - ./backend:/app # Para ver cambios (aunque Java requiere recompilar a veces)
+      - /app/target    # Evitar conflictos de compilación
+    depends_on:
+      db:
+        condition: service_healthy
+      ai-service:
+        condition: service_started
+    networks:
+      - churn_network
+
+  # 4. Frontend (Vue.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: churn_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      # URL del backend para que Axios sepa a dónde llamar
+      - VITE_API_URL=http://localhost:8080/api/v1
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - churn_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  churn_network:
+    driver: bridge
