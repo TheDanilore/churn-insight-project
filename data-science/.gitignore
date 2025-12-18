@@ -1,0 +1,8 @@
+# Ignorar recursivamente (con los asteriscos dobles)
+**/__pycache__/
+**/*.pyc
+
+# Otros
+venv/
+.env
+.DS_Store

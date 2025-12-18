@@ -13,4 +13,4 @@ COPY . .
 EXPOSE 8000
 
 # Ejecutar FastAPI con recarga automática (--reload)
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["fastapi", "run", "app/main.py", "--port", "8000", "--host", "0.0.0.0"]

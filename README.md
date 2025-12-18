@@ -59,16 +59,49 @@ Este proyecto integra tres tecnologías principales orquestadas con Docker:
 ```text
 /churn-insight
 │
-├── /backend          # Spring Boot (Lógica de Negocio)
-│   ├── src/main/java # Código Java
-│   └── pom.xml       # Dependencias Maven
+├── .gitignore               # 🛡️ Global: Ignora basura (node_modules, venv, target, .idea)
+├── README.md                # 📄 Documentación oficial para desarrolladores y jueces
+├── docker-compose.yml       # 🐙 Orquestador: Levanta BD + Backend + Frontend + AI juntos
 │
-├── /frontend         # Vue.js (Interfaz de Usuario)
-│   └── src/          # Componentes y Vistas
+├── /backend                 # ☕ Spring Boot (Lógica de Negocio & API Principal)
+│   ├── .dockerignore        # Ignora target/ y mvnw para builds rápidos
+│   ├── Dockerfile           # Imagen: Eclipse Temurin (Java 21)
+│   ├── mvnw & mvnw.cmd      # Maven Wrapper (para compilar sin instalar Maven)
+│   ├── pom.xml              # Dependencias: Spring Web, JPA, Postgres, DevTools
+│   └── src
+│       └── main
+│           ├── resources
+│           │   └── application.properties # ⚙️ Config: URL de Base de Datos y Credenciales
+│           └── java/com/churninsight/backend
+│               ├── BackendApplication.java # Punto de inicio (Main)
+│               ├── controller     # 🕹️ API REST: Recibe peticiones HTTP del Frontend
+│               │   └── HealthController.java
+│               ├── model          # 📦 Entidades: Tablas de Base de Datos (User, Prediction)
+│               ├── repository     # 🗄️ Repositorios: Consultas SQL automáticas (JPA)
+│               ├── service        # 🧠 Lógica: Conecta con /data-science y guarda en BD
+│               └── dto            # 📨 DTOs: JSONs de entrada y salida (Contrato)
 │
-├── /data-science     # Python (Inteligencia Artificial)
-│   ├── main.py       # Endpoint FastAPI
-│   └── requirements.txt
+├── /data-science            # 🐍 Python FastAPI (Microservicio de IA)
+│   ├── .dockerignore        # Ignora venv/ y __pycache__ (Vital para Docker)
+│   ├── Dockerfile           # Imagen: Python 3.13 Slim
+│   ├── requirements.txt     # Librerías: fastapi, uvicorn, scikit-learn, pandas, joblib
+│   ├── modelo_churn.joblib  # 🧠 EL CEREBRO: Archivo del modelo entrenado (ej: RandomForest)
+│   │                        # (Este archivo se descarga de Colab y se pega aquí)
+│   └── /app                 # 📂 Código Modular (Arquitectura Limpia)
+│       ├── __init__.py      # Archivo vacío (necesario para paquetes Python)
+│       ├── main.py          # 🚪 Controlador: Define rutas (@app.post("/predict"))
+│       ├── schemas.py       # 📝 Contrato: Valida el JSON de entrada con Pydantic
+│       └── services.py      # 🧠 Servicio: Carga el .joblib y ejecuta la predicción
 │
-├── docker-compose.yml # Orquestador de servicios
-└── README.md          # Esta documentación
+└── /frontend                # 🎨 Vue.js 3 + Vite (Interfaz de Usuario)
+    ├── .dockerignore        # Ignora node_modules/
+    ├── Dockerfile           # Imagen: Node 20 Alpine
+    ├── package.json         # Dependencias: Vue, Axios
+    ├── vite.config.js       # Configuración del servidor de desarrollo
+    ├── index.html           # HTML base
+    └── src
+        ├── main.js          # Punto de entrada JS
+        ├── App.vue          # Componente Padre
+        ├── services         # 🌐 API Client: Configuración de Axios para llamar al Backend
+        ├── components       # 🧩 Piezas: Botones, Inputs, Alertas, Spinner
+        └── views            # 📺 Pantallas: HomeView (Formulario), DashboardView
