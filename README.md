@@ -20,7 +20,14 @@ Este proyecto integra tres tecnologías principales orquestadas con Docker:
 ### Prerrequisitos
 * **Docker Desktop** (Debe estar corriendo).
 * **Git**.
+* **Modelo IA:** Asegúrate de tener el archivo `modelo_churn.joblib` en la carpeta `data-science/`.
 * *(Opcional para desarrollo local)*: Java 21 JDK, Python 3.13, Node.js 20+.
+
+### ⚙️ 0. Configuración Inicial
+Antes de arrancar, crea el archivo de variables de entorno en la raíz:
+
+1. Crea un archivo llamado `.env` en la raíz del proyecto (`/churn-insight/.env`).
+2. Copia el contenido del ejemplo `.env.example`.
 
 ### 🛠️ Opción A: Desarrollo Híbrido (Recomendado)
 *Usamos Docker solo para la Base de Datos y la IA, mientras corres Java y Vue en tu PC para mayor velocidad.*
@@ -59,6 +66,7 @@ Este proyecto integra tres tecnologías principales orquestadas con Docker:
 ```text
 /churn-insight
 │
+├── .env (.env.example)      # 🔑 Variables de Entorno (Puertos, BD, Claves)
 ├── .gitignore               # 🛡️ Global: Ignora basura (node_modules, venv, target, .idea)
 ├── README.md                # 📄 Documentación oficial para desarrolladores y jueces
 ├── docker-compose.yml       # 🐙 Orquestador: Levanta BD + Backend + Frontend + AI juntos
@@ -94,6 +102,7 @@ Este proyecto integra tres tecnologías principales orquestadas con Docker:
 │       └── services.py      # 🧠 Servicio: Carga el .joblib y ejecuta la predicción
 │
 └── /frontend                # 🎨 Vue.js 3 + Vite (Interfaz de Usuario)
+    ├── .env                 # Variables para modo local (VITE_API_URL)
     ├── .dockerignore        # Ignora node_modules/
     ├── Dockerfile           # Imagen: Node 20 Alpine
     ├── package.json         # Dependencias: Vue, Axios
