@@ -115,3 +115,5 @@ Antes de arrancar, crea el archivo de variables de entorno en la raíz:
         ├── services         # 🌐 API Client: Configuración de Axios para llamar al Backend
         ├── components       # 🧩 Piezas: Botones, Inputs, Alertas, Spinner
         └── views            # 📺 Pantallas: HomeView (Formulario), DashboardView
+
+```
