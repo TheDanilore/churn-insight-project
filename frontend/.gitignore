@@ -14,6 +14,7 @@ dist-ssr
 coverage
 *.local
 
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -34,3 +35,4 @@ coverage
 
 # Vitest
 __screenshots__/
+

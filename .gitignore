@@ -8,3 +8,5 @@ Thumbs.db
 # --- DOCKER ---
 # No ignoramos docker-compose, pero sí datos temporales si los hubiera
 docker-volumes/
+
+.env
