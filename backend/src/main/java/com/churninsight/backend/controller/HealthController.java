@@ -14,7 +14,7 @@ public class HealthController {
     public Map<String, String> checkHealth() {
         return Map.of(
                 "status", "OK",
-                "message", "Backend Spring Boot corriendo exitosamente sin docker 🚀",
+                "message", "Backend Spring Boot corriendo exitosamente sin docker 🚀 Funcionando correctamente",
                 "version", "1.0.0");
     }
 }
