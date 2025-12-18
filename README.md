@@ -83,7 +83,8 @@ Antes de arrancar, crea el archivo de variables de entorno en la raíz:
 │           └── java/com/churninsight/backend
 │               ├── BackendApplication.java # Punto de inicio (Main)
 │               ├── controller     # 🕹️ API REST: Recibe peticiones HTTP del Frontend
-│               │   └── HealthController.java
+│               │   └── /v1        # Versionado físico
+│               │       └── PredictionController.java
 │               ├── model          # 📦 Entidades: Tablas de Base de Datos (User, Prediction)
 │               ├── repository     # 🗄️ Repositorios: Consultas SQL automáticas (JPA)
 │               ├── service        # 🧠 Lógica: Conecta con /data-science y guarda en BD
@@ -96,7 +97,7 @@ Antes de arrancar, crea el archivo de variables de entorno en la raíz:
 │   ├── modelo_churn.joblib  # 🧠 EL CEREBRO: Archivo del modelo entrenado (ej: RandomForest)
 │   │                        # (Este archivo se descarga de Colab y se pega aquí)
 │   └── /app                 # 📂 Código Modular (Arquitectura Limpia)
-│       ├── __init__.py      # Archivo vacío (necesario para paquetes Python)
+│       ├── __init__.py      #  Archivo vacío (necesario para paquetes Python)
 │       ├── main.py          # 🚪 Controlador: Define rutas (@app.post("/predict"))
 │       ├── schemas.py       # 📝 Contrato: Valida el JSON de entrada con Pydantic
 │       └── services.py      # 🧠 Servicio: Carga el .joblib y ejecuta la predicción
