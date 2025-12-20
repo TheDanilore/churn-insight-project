@@ -1,0 +1,30 @@
+# ETAPA 1: Construcción (Build)
+FROM node:20-alpine as build-stage
+
+WORKDIR /app
+
+# 1. Instalamos pnpm globalmente dentro del contenedor
+RUN npm install -g pnpm
+
+# 2. Copiamos package.json Y el lockfile de pnpm
+COPY package.json pnpm-lock.yaml ./
+
+# 3. Instalamos dependencias
+# --frozen-lockfile es vital en prod: falla si el lockfile no coincide (seguridad)
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+
+# Variable de entorno para que Vite sepa dónde está el backend (vía proxy Nginx)
+ENV VITE_API_URL=/api/v1 
+
+# 4. Construimos la app (genera carpeta /dist)
+RUN pnpm run build
+
+# ETAPA 2: Servidor Web (Nginx) - ¡Esta parte no cambia!
+# Nginx solo sirve archivos estáticos, no le importa si usaste npm o pnpm antes.
+FROM nginx:alpine as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

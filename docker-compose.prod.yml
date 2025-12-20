@@ -1,0 +1,65 @@
+services:
+  # 1. Base de Datos
+  db:
+    image: postgres:15-alpine
+    container_name: churn_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - churn_network
+
+  # 2. Data Science
+  ai-service:
+    build:
+      context: ./data-science
+    container_name: churn_ai_service
+    restart: always
+    expose:
+      - "8000" # Oculto al mundo, solo visible en la red interna
+    networks:
+      - churn_network
+
+  # 3. Backend (Java)
+  backend:
+    build:
+      context: ./backend
+    container_name: churn_backend
+    restart: always
+    expose:
+      - "8080" # Oculto al mundo, Nginx hablará con él
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - AI_SERVICE_URL=http://ai-service:8000/predict
+    depends_on:
+      - db
+      - ai-service
+    networks:
+      - churn_network
+
+  # 4. Frontend (Nginx - Producción)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod  # <--- Apunta al Dockerfile de producción
+    container_name: churn_frontend
+    restart: always
+    ports:
+      - "80:80" # El único puerto abierto al público
+    depends_on:
+      - backend
+    networks:
+      - churn_network
+
+volumes:
+  postgres_data:
+
+networks:
+  churn_network:
+    driver: bridge

@@ -5,8 +5,8 @@ services:
     container_name: churn_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_NAME}      # Lee del .env
-      POSTGRES_USER: ${DB_USER}    # Lee del .env
+      POSTGRES_DB: ${DB_NAME} # Lee del .env
+      POSTGRES_USER: ${DB_USER} # Lee del .env
       POSTGRES_PASSWORD: ${DB_PASSWORD} # Lee del .env
     ports:
       - "${DB_PORT}:5432"
@@ -44,11 +44,9 @@ services:
     ports:
       - "${BACKEND_PORT}:8080"
     environment:
-      # Conexión a BD usando variables
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-      # Conexión a Python
       - AI_SERVICE_URL=http://ai-service:8000/predict
     volumes:
       - ./backend:/app
@@ -61,6 +59,25 @@ services:
     networks:
       - churn_network
 
+  # 4. Frontend (Vue.js - Modo Desarrollo)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: churn_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT}:5173"
+    environment:
+      - VITE_API_URL=http://localhost:${BACKEND_PORT}/api/v1
+    volumes:
+      - ./frontend:/app # Sincroniza tu código
+      - /app/node_modules # Volumen anónimo (Mantiene los módulos de Linux aislados)
+    networks:
+      - churn_network
+    # CAMBIO AQUÍ: Usamos pnpm
+    command: ["pnpm", "run", "dev", "--host"]
+    
 volumes:
   postgres_data:
     driver: local

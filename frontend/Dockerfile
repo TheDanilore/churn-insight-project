@@ -1,29 +1,20 @@
-# --- ETAPA 1: Construcción (Build) ---
-FROM node:20-alpine as build-stage
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Copiamos dependencias primero para aprovechar caché de Docker
-COPY package*.json ./
+# 1. Instalamos pnpm globalmente
+RUN npm install -g pnpm
 
-# Instalamos dependencias
-RUN npm install
+# 2. Copiamos los archivos de dependencias (OJO: Necesitas tener el pnpm-lock.yaml)
+COPY package.json pnpm-lock.yaml ./
 
-# Copiamos el código fuente
+# 3. Instalamos dependencias usando pnpm
+# --frozen-lockfile asegura que se instalen las versiones exactas del lockfile
+RUN pnpm install --frozen-lockfile
+
 COPY . .
 
-# Construimos la app (Crea la carpeta /dist)
-RUN npm run build
+EXPOSE 5173
 
-# --- ETAPA 2: Producción (Nginx) ---
-FROM nginx:alpine as production-stage
-
-# Copiamos SOLO los archivos construidos (HTML/CSS/JS) de la etapa anterior
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-
-# (Opcional) Copiar configuración personalizada de Nginx si usas Vue Router
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Comando por defecto (se sobreescribe en el docker-compose)
+CMD ["pnpm", "run", "dev", "--host"]
