@@ -61,25 +61,6 @@ services:
     networks:
       - churn_network
 
-  # 4. Frontend (Vue.js)
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: churn_frontend
-    restart: unless-stopped
-    ports:
-      - "${FRONTEND_PORT}:5173"
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      # OJO: Aquí sí usamos localhost porque es el navegador quien llama
-      - VITE_API_URL=http://localhost:${BACKEND_PORT}/api/v1
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    networks:
-      - churn_network
-
 volumes:
   postgres_data:
     driver: local

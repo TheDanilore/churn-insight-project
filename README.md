@@ -55,9 +55,9 @@ Antes de arrancar, crea el archivo de variables de entorno en la raíz:
 
 1.  En la raíz del proyecto, ejecuta:
     ```bash
-    docker-compose up --build
+    docker-compose up --build -d
     ```
-2.  Espera a que los logs se estabilicen.
+2.  Espera a que termine.
 
 ---
 
