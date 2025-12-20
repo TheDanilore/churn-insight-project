@@ -29,6 +29,8 @@ Antes de arrancar, crea el archivo de variables de entorno en la raíz:
 1. Crea un archivo llamado `.env` en la raíz del proyecto (`/churn-insight/.env`).
 2. Copia el contenido del ejemplo `.env.example`.
 
+Lo mismo en la carpeta `frontend/`.
+
 ### 🛠️ Opción A: Desarrollo Híbrido (Recomendado)
 *Usamos Docker solo para la Base de Datos y la IA, mientras corres Java y Vue en tu PC para mayor velocidad.*
 
@@ -39,7 +41,8 @@ Antes de arrancar, crea el archivo de variables de entorno en la raíz:
 
 2.  **Inicia el Backend (Java):**
     * Entra a la carpeta: `cd backend`
-    * Ejecuta: `.\mvnw spring-boot:run`
+    * Ejecuta (Windows): `.\mvnw spring-boot:run`
+    * Ejecuta (Mac/Linux): `./mvnw spring-boot:run`
     * *Swagger/API:* http://localhost:8080/api/health
 
 3.  **Inicia el Frontend (Vue):**
@@ -51,13 +54,30 @@ Antes de arrancar, crea el archivo de variables de entorno en la raíz:
 ---
 
 ### 🐳 Opción B: Todo en Docker (Modo Demo)
-*Ideal para validar que todo funciona junto sin instalar nada extra.*
+*Ideal para validar que todo funciona integrado sin instalar nada en tu PC.*
 
 1.  En la raíz del proyecto, ejecuta:
     ```bash
     docker-compose up --build -d
     ```
-2.  Espera a que termine.
+2.  Espera a que termine el build.
+
+3. Accede a la web en: http://localhost:5173
+
+---
+
+### ☁️ Despliegue en Producción (Servidor)
+
+*Usa esta opción en un servidor/nube. Utiliza Nginx como servidor web en el puerto 80.*
+
+```bash
+    docker-compose -f docker-compose.prod.yml up -d --build
+```
+
+Web: http://dominio.com (o la IP del servidor)
+
+Si lo ejecutas en tu computadora http://localhost/
+
 
 ---
 
