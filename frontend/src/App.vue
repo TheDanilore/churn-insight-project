@@ -1,11 +1,18 @@
-<script setup></script>
+<script setup>
+// Importamos el componente
+import ChurnForm from '@/components/ChurnForm.vue';
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <main>
+    <ChurnForm />
+  </main>
 </template>
-
-<style scoped></style>
+<style scoped>
+  /* Reset básico para que ocupe toda la pantalla y tenga fondo gris */
+body {
+  margin: 0;
+  background-color: #f7fafc; 
+  min-height: 100vh;
+}
+</style>

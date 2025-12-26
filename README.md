@@ -41,6 +41,7 @@ Lo mismo en la carpeta `frontend/`.
 
 2.  **Inicia el Backend (Java):**
     * Entra a la carpeta: `cd backend`
+    * Ejecuta (Windows) (Opcional - para limpiar, compilar, probar): `.\mvnw clean install` o `.\mvnw clean install -DskipTests`
     * Ejecuta (Windows): `.\mvnw spring-boot:run`
     * Ejecuta (Mac/Linux): `./mvnw spring-boot:run`
     * 🔗*Swagger/API:* http://localhost:8080/api/health
