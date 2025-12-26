@@ -56,6 +56,10 @@ Lo mismo en la carpeta `frontend/`.
     * **Activa el entorno virtual:**
         * Windows: `.\venv\Scripts\Activate`
         * Mac/Linux: `source venv/bin/activate`
+
+    * **Desactivar (Al final)**
+        * `deactivate`
+
     * Instala las librerías (Solo si no lo has hecho antes): `pip install -r requirements.txt`
     * 🛑 IMPORTANTE: Detén el contenedor de IA para liberar el puerto 8000:
         
