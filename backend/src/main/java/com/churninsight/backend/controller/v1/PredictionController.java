@@ -15,10 +15,12 @@ import com.churninsight.backend.service.PredictionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/predictions") // Buena práctica: Incluye el RECURSO en la base, no solo la versión
+@Tag(name = "Predicciones", description = "Endpoints para consultar el modelo de IA") // Título en Swagger
 public class PredictionController {
 
     private static final Logger logger = LoggerFactory.getLogger(PredictionController.class);
@@ -34,9 +36,9 @@ public class PredictionController {
     // El verbo HTTP (POST) ya indica la acción "Crear/Predecir".
     @Operation(summary = "Predecir Churn", description = "Analiza los datos de un cliente y devuelve la probabilidad de que cancele el servicio.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "✅ Predicción exitosa"),
-        @ApiResponse(responseCode = "400", description = "❌ Datos inválidos (Revisar antigüedad negativa o campos vacíos)"),
-        @ApiResponse(responseCode = "503", description = "⚠️ Servicio de IA no disponible")
+            @ApiResponse(responseCode = "200", description = "✅ Predicción exitosa"),
+            @ApiResponse(responseCode = "400", description = "❌ Datos inválidos (Revisar antigüedad negativa o campos vacíos)"),
+            @ApiResponse(responseCode = "503", description = "⚠️ Servicio de IA no disponible")
     })
     @PostMapping
     public ResponseEntity<ChurnResponseDTO> predictChurn(
