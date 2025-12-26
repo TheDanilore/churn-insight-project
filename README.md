@@ -53,6 +53,12 @@ Lo mismo en la carpeta `frontend/`.
     * Ejecuta: `pnpm dev`
     * 🔗*Web:* http://localhost:5173
 
+
+    <img width="1919" height="905" alt="Captura de pantalla 2025-12-26 181545" src="https://github.com/user-attachments/assets/23ed5ad1-7a80-4489-a42b-47549bc5420a" />
+
+    <img width="1919" height="908" alt="Captura de pantalla 2025-12-26 181641" src="https://github.com/user-attachments/assets/90e99641-d68b-42ac-a54b-ae5225ad3617" />
+
+
 4.  **🐍 Desarrollo en DataScience (FastAPI) - Opcional:** (Solo realiza este paso si necesitas modificar el código de Python/IA. Si no, usa el contenedor del paso 1).
     * Entra a la carpeta: `cd data-science`
     * **Activa el entorno virtual:**
