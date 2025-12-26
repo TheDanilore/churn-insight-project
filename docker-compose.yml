@@ -47,7 +47,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-      - AI_SERVICE_URL=http://ai-service:8000/predict
+      - AI_SERVICE_URL=http://ai-service:8000/
     volumes:
       - ./backend:/app
       - /app/target
