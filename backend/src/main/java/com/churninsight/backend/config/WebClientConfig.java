@@ -15,8 +15,10 @@ public class WebClientConfig {
     private String aiServiceUrl;
 
     @Bean
-    public WebClient aiWebClient(WebClient.Builder builder) {
-        return builder
+    public WebClient aiWebClient() { 
+        
+        // Usamos el método estático .builder()
+        return WebClient.builder() 
                 .baseUrl(aiServiceUrl)
                 .build();
     }
