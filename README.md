@@ -43,13 +43,39 @@ Lo mismo en la carpeta `frontend/`.
     * Entra a la carpeta: `cd backend`
     * Ejecuta (Windows): `.\mvnw spring-boot:run`
     * Ejecuta (Mac/Linux): `./mvnw spring-boot:run`
-    * *Swagger/API:* http://localhost:8080/api/health
+    * 🔗*Swagger/API:* http://localhost:8080/api/health
 
 3.  **Inicia el Frontend (Vue):**
     * Entra a la carpeta: `cd frontend`
     * Instala: `pnpm install` (o npm install)
     * Ejecuta: `pnpm dev`
-    * *Web:* http://localhost:5173
+    * 🔗*Web:* http://localhost:5173
+
+4.  **🐍 Desarrollo en DataScience (FastAPI) - Opcional:** (Solo realiza este paso si necesitas modificar el código de Python/IA. Si no, usa el contenedor del paso 1).
+    * Entra a la carpeta: `cd data-science`
+    * **Activa el entorno virtual:**
+        * Windows: `.\venv\Scripts\Activate`
+        * Mac/Linux: `source venv/bin/activate`
+    * Instala las librerías (Solo si no lo has hecho antes): `pip install -r requirements.txt`
+    * 🛑 IMPORTANTE: Detén el contenedor de IA para liberar el puerto 8000:
+        
+        ```bash
+        docker stop churn_ai_service
+        ```
+
+    * Levanta el servidor localmente:
+
+        ```bash
+        uvicorn app.main:app --reload
+        ```
+
+        * app.main: Busca el archivo main.py dentro de la carpeta app.
+
+        * :app: Es el nombre de la variable app = FastAPI(...).
+
+        * --reload: Reinicio automático al guardar cambios.
+
+    * *Web:* http://127.0.0.1:8000/docs
 
 ---
 
