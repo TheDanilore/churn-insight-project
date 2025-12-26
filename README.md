@@ -44,6 +44,7 @@ Lo mismo en la carpeta `frontend/`.
     * Ejecuta (Windows): `.\mvnw spring-boot:run`
     * Ejecuta (Mac/Linux): `./mvnw spring-boot:run`
     * 🔗*Swagger/API:* http://localhost:8080/api/health
+    * 🔗*Doc Api:* http://localhost:8080/swagger-ui/index.html
 
 3.  **Inicia el Frontend (Vue):**
     * Entra a la carpeta: `cd frontend`

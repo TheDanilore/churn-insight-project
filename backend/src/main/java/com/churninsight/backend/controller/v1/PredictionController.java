@@ -12,6 +12,9 @@ import com.churninsight.backend.dto.ChurnRequestDTO;
 import com.churninsight.backend.dto.ChurnResponseDTO;
 import com.churninsight.backend.service.PredictionService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
 @RestController
@@ -29,6 +32,12 @@ public class PredictionController {
     // Endpoint limpio: POST /api/v1/predictions (en lugar de /api/v1/predict)
     // En REST, se usan sustantivos (recursos), no verbos en la URL.
     // El verbo HTTP (POST) ya indica la acción "Crear/Predecir".
+    @Operation(summary = "Predecir Churn", description = "Analiza los datos de un cliente y devuelve la probabilidad de que cancele el servicio.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "✅ Predicción exitosa"),
+        @ApiResponse(responseCode = "400", description = "❌ Datos inválidos (Revisar antigüedad negativa o campos vacíos)"),
+        @ApiResponse(responseCode = "503", description = "⚠️ Servicio de IA no disponible")
+    })
     @PostMapping
     public ResponseEntity<ChurnResponseDTO> predictChurn(
             @Valid @RequestBody ChurnRequestDTO request) {
