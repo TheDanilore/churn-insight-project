@@ -17,5 +17,17 @@ export default {
             // Si el servidor está muerto o no hay internet
             throw new Error("No se pudo conectar con el servidor.");
         }
+    },
+
+    async predecirChurnLote(datosClientes) {
+        try {
+            const response = await api.post('/predictions/batch', datosClientes);
+            return response.data; 
+        } catch (error) {
+            if (error.response && error.response.data) {
+                throw error.response.data; 
+            }
+            throw new Error("No se pudo conectar con el servidor para procesamiento en lote.");
+        }
     }
 };

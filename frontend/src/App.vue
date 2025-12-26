@@ -1,18 +1,17 @@
 <script setup>
-// Importamos el componente
-import ChurnForm from '@/components/ChurnForm.vue';
+import Sidebar from '@/components/layouts/Sidebar.vue'
 </script>
 
 <template>
-  <main>
-    <ChurnForm />
-  </main>
+  <div class="app-layout">
+    <Sidebar />
+    <main class="main-content">
+      <router-view />
+    </main>
+  </div>
 </template>
-<style scoped>
-  /* Reset básico para que ocupe toda la pantalla y tenga fondo gris */
-body {
-  margin: 0;
-  background-color: #f7fafc; 
-  min-height: 100vh;
-}
+
+<style>
+
 </style>
+
