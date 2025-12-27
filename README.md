@@ -41,6 +41,7 @@ Lo mismo en la carpeta `frontend/`.
 
 2.  **Inicia el Backend (Java):**
     * Entra a la carpeta: `cd backend`
+    * Ejecuta (Windows) (Opcional - para limpiar, compilar, probar): `.\mvnw clean install` o `.\mvnw clean install -DskipTests`
     * Ejecuta (Windows): `.\mvnw spring-boot:run`
     * Ejecuta (Mac/Linux): `./mvnw spring-boot:run`
     * 🔗*Swagger/API:* http://localhost:8080/api/health
@@ -51,6 +52,12 @@ Lo mismo en la carpeta `frontend/`.
     * Instala: `pnpm install` (o npm install)
     * Ejecuta: `pnpm dev`
     * 🔗*Web:* http://localhost:5173
+
+
+    <img width="1919" height="905" alt="Captura de pantalla 2025-12-26 181545" src="https://github.com/user-attachments/assets/23ed5ad1-7a80-4489-a42b-47549bc5420a" />
+
+    <img width="1919" height="908" alt="Captura de pantalla 2025-12-26 181641" src="https://github.com/user-attachments/assets/90e99641-d68b-42ac-a54b-ae5225ad3617" />
+
 
 4.  **🐍 Desarrollo en DataScience (FastAPI) - Opcional:** (Solo realiza este paso si necesitas modificar el código de Python/IA. Si no, usa el contenedor del paso 1).
     * Entra a la carpeta: `cd data-science`
@@ -168,3 +175,26 @@ Si lo ejecutas en tu computadora http://localhost/
         └── views            # 📺 Pantallas: HomeView (Formulario), DashboardView
 
 ```
+
+---
+
+## 👥 Equipo de Desarrollo
+
+### Grupo 05 - Hackathon NoCountry 2025
+
+| Rol | Área | Responsabilidades |
+| :--- | :--- | :--- |
+| **Frontend Developer** | Vue.js 3 + Vite | Interfaz de usuario, componentes, temas y responsive design |
+| **Backend Developer** | Java Spring Boot | API REST, lógica de negocio, integración con servicios |
+| **Data Scientist** | Python + FastAPI - Google Colab | Modelo ML, pipeline de datos, predicciones, .joblib |
+| **DevOps** | Docker & Deployment | Orquestación de contenedores, CI/CD, configuración |
+
+---
+
+## 📜 Licencia
+
+Este proyecto fue desarrollado como parte del **Hackathon NoCountry**.
+
+---
+
+**Hecho con ❤️ por Grupo 05 - Hackathon NoCountry Diciembre 2025 - Enero 2026**
