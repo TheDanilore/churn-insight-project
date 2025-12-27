@@ -1,5 +1,8 @@
 package com.churninsight.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
+
 
 public record ChurnResponseDTO(
     @JsonProperty("prevision")
