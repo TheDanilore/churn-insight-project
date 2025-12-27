@@ -2,6 +2,7 @@
 import { onMounted } from 'vue'
 import SidebarNav from './components/layouts/SidebarNav.vue'
 import HeaderSection from './components/layouts/HeaderSection.vue'
+import FooterSection from './components/layouts/FooterSection.vue'
 
 onMounted(() => {
   // Initialize theme from localStorage or system preference
@@ -25,6 +26,7 @@ onMounted(() => {
       <HeaderSection />
       <main class="main-content">
         <router-view />
+        <FooterSection />
       </main>
     </div>
   </div>
@@ -33,7 +35,7 @@ onMounted(() => {
 <style>
 .app-layout {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   overflow: hidden;
 }
 
@@ -53,7 +55,7 @@ onMounted(() => {
 @media (max-width: 768px) {
   .app-layout {
     flex-direction: column;
-    height: auto;
+    min-height: auto;
   }
 
   .main-content {

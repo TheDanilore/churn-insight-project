@@ -1,11 +1,25 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const router = useRouter()
+const scrollProgress = ref(0)
 
 const irAPrediccion = () => {
   router.push('/churn')
 }
+
+onMounted(() => {
+  const handleScroll = () => {
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
+    scrollProgress.value = scrollHeight > 0 ? (window.scrollY / scrollHeight) * 100 : 0
+  }
+  window.addEventListener('scroll', handleScroll)
+
+  onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+  })
+})
 
 const architectureModules = [
   {
@@ -13,74 +27,77 @@ const architectureModules = [
     title: 'Frontend',
     tech: 'Vue.js 3 + Vite',
     port: 'Puerto 5173',
-    description: 'Panel intuitivo para predicciones y análisis'
+    description: 'Panel intuitivo para predicciones y análisis',
   },
   {
     icon: '☕',
     title: 'Backend',
     tech: 'Spring Boot 3 (Java 21)',
     port: 'Puerto 8080',
-    description: 'API REST y lógica de negocio principal'
+    description: 'API REST y lógica de negocio principal',
   },
   {
     icon: '🐍',
     title: 'Data Science',
     tech: 'FastAPI (Python 3.13)',
     port: 'Puerto 8000',
-    description: 'Microservicio con modelo ML entrenado'
+    description: 'Microservicio con modelo ML entrenado',
   },
   {
     icon: '🗄️',
     title: 'Database',
     tech: 'PostgreSQL 15',
     port: 'Puerto 5432',
-    description: 'Persistencia de datos y predicciones'
-  }
+    description: 'Persistencia de datos y predicciones',
+  },
 ]
 
 const modelStats = [
   { label: 'Precisión', value: '94%', icon: '🎯' },
   { label: 'Análisis', value: '<200ms', icon: '⚡' },
   { label: 'Seguridad', value: 'Enterprise', icon: '🛡️' },
-  { label: 'ML', value: 'Avanzado', icon: '🧠' }
+  { label: 'ML', value: 'Avanzado', icon: '🧠' },
 ]
 
 const features = [
   {
     icon: '⚡',
     title: 'Análisis en Tiempo Real',
-    description: 'Procesa datos instantáneamente con nuestro motor de ML optimizado'
+    description: 'Procesa datos instantáneamente con nuestro motor de ML optimizado',
   },
   {
     icon: '🎯',
     title: 'Predicciones Precisas',
-    description: 'Modelo entrenado que alcanza 94% de precisión en identificación de churn'
+    description: 'Modelo entrenado que alcanza 94% de precisión en identificación de churn',
   },
   {
     icon: '🔐',
     title: 'Seguridad Enterprise',
-    description: 'Validación estricta de datos con estándares de seguridad internacionales'
+    description: 'Validación estricta de datos con estándares de seguridad internacionales',
   },
   {
     icon: '📊',
     title: 'Visualización Intuitiva',
-    description: 'Dashboards modernos que muestran resultados de forma clara y accionable'
+    description: 'Dashboards modernos que muestran resultados de forma clara y accionable',
   },
   {
     icon: '🐳',
     title: 'Escalable con Docker',
-    description: 'Orquestación completa con Docker Compose para cualquier entorno'
+    description: 'Orquestación completa con Docker Compose para cualquier entorno',
   },
   {
     icon: '🚀',
     title: 'Deploy Rápido',
-    description: 'Modo híbrido o full Docker para máxima flexibilidad en desarrollo'
-  }
+    description: 'Modo híbrido o full Docker para máxima flexibilidad en desarrollo',
+  },
 ]
 </script>
 
 <template>
   <div class="home-view">
+    <!-- Progress Bar -->
+    <div class="scroll-progress-bar" :style="{ width: scrollProgress + '%' }"></div>
+
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="bg-effects">
@@ -90,16 +107,13 @@ const features = [
       </div>
 
       <div class="hero-container">
-        <div class="system-status">
-          ChurnInsight Predict • v1.0.0
-        </div>
+        <div class="system-status">ChurnInsight Predict • v1.0.0</div>
 
-        <h1 class="title">
-          Bienvenido a <span class="brand">ChurnInsight</span>
-        </h1>
-        
+        <h1 class="title">Bienvenido a <span class="brand">ChurnInsight</span></h1>
+
         <p class="subtitle">
-          Tu centro de control para la retención de clientes. Detecta patrones de fuga con <strong>94% de precisión</strong> usando IA avanzada.
+          Tu centro de control para la retención de clientes. Detecta patrones de fuga con
+          <strong>94% de precisión</strong> usando IA avanzada.
         </p>
 
         <div class="model-stats">
@@ -113,7 +127,8 @@ const features = [
         </div>
 
         <button @click="irAPrediccion" class="cta-button primary">
-          <span>🔮</span> Iniciar Predicción
+          <span class="button-icon">🔮</span>
+          <span class="button-text">Iniciar Predicción</span>
         </button>
       </div>
     </section>
@@ -157,13 +172,28 @@ const features = [
       <h2>Comienza Ahora</h2>
       <p>Realiza tu primera predicción de churn en segundos</p>
       <button @click="irAPrediccion" class="cta-button large">
-        <span>🚀</span> Ir a Predicción
+        <span class="button-icon">🚀</span>
+        <span class="button-text">Ir a Predicción</span>
       </button>
     </section>
   </div>
 </template>
 
 <style scoped>
+/* ========================
+   SCROLL PROGRESS BAR
+   ======================== */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+  z-index: 999;
+  transition: width 0.1s ease;
+}
+
 /* ========================
    GENERAL
    ======================== */
@@ -241,15 +271,21 @@ const features = [
 .grid-pattern {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 40px 40px;
   mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(30px, 30px); }
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(30px, 30px);
+  }
 }
 
 .hero-container {
@@ -336,13 +372,28 @@ const features = [
   padding: 16px;
   border-radius: 12px;
   border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(99, 102, 241, 0.08), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .stat-badge:hover {
   border-color: var(--primary-color);
   box-shadow: var(--shadow-md);
   transform: translateY(-4px);
+}
+
+.stat-badge:hover::before {
+  opacity: 1;
 }
 
 .stat-emoji {
@@ -380,14 +431,30 @@ const features = [
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.cta-button:hover::before {
+  transform: translateX(100%);
 }
 
 .cta-button.primary {
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: white;
   box-shadow: var(--shadow-md);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .cta-button.primary:hover {
@@ -396,9 +463,32 @@ const features = [
   filter: brightness(1.1);
 }
 
+.cta-button.primary:active {
+  transform: translateY(-1px);
+}
+
 .cta-button.large {
   padding: 16px 40px;
   font-size: 1.1rem;
+}
+
+.button-icon {
+  font-size: 1.2em;
+  display: inline-block;
+}
+
+.cta-button:hover .button-icon {
+  animation: iconBounce 0.4s ease-in-out infinite;
+}
+
+@keyframes iconBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 /* ========================
@@ -422,10 +512,21 @@ const features = [
   padding: 32px 24px;
   border-radius: 12px;
   text-align: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.module-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .module-card:hover {
@@ -434,9 +535,19 @@ const features = [
   transform: translateY(-8px);
 }
 
+.module-card:hover::before {
+  opacity: 1;
+}
+
 .module-icon {
   font-size: 2.5rem;
   margin-bottom: 8px;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.module-card:hover .module-icon {
+  transform: scale(1.15) rotate(5deg);
 }
 
 .module-card h3 {
@@ -489,11 +600,22 @@ const features = [
   border: 1px solid var(--border-color);
   padding: 32px 24px;
   border-radius: 12px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   gap: 12px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .feature-card:hover {
@@ -502,9 +624,19 @@ const features = [
   box-shadow: var(--shadow-lg);
 }
 
+.feature-card:hover::after {
+  opacity: 1;
+}
+
 .feature-icon {
   font-size: 2.5rem;
   margin-bottom: 8px;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.15) rotate(-5deg);
 }
 
 .feature-card h3 {

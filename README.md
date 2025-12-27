@@ -176,4 +176,25 @@ Si lo ejecutas en tu computadora http://localhost/
 
 ```
 
-Hecho por grupo 05 - Hackaton NoCountry
+---
+
+## 👥 Equipo de Desarrollo
+
+### Grupo 05 - Hackathon NoCountry 2025
+
+| Rol | Área | Responsabilidades |
+| :--- | :--- | :--- |
+| **Frontend Developer** | Vue.js 3 + Vite | Interfaz de usuario, componentes, temas y responsive design |
+| **Backend Developer** | Java Spring Boot | API REST, lógica de negocio, integración con servicios |
+| **Data Scientist** | Python + FastAPI - Google Colab | Modelo ML, pipeline de datos, predicciones, .joblib |
+| **DevOps** | Docker & Deployment | Orquestación de contenedores, CI/CD, configuración |
+
+---
+
+## 📜 Licencia
+
+Este proyecto fue desarrollado como parte del **Hackathon NoCountry**.
+
+---
+
+**Hecho con ❤️ por Grupo 05 - Hackathon NoCountry Diciembre 2025 - Enero 2026**
