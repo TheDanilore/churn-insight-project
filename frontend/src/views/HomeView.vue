@@ -1,272 +1,667 @@
 <script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const irAPrediccion = () => {
+  router.push('/churn')
+}
+
+const architectureModules = [
+  {
+    icon: '🎨',
+    title: 'Frontend',
+    tech: 'Vue.js 3 + Vite',
+    port: 'Puerto 5173',
+    description: 'Panel intuitivo para predicciones y análisis'
+  },
+  {
+    icon: '☕',
+    title: 'Backend',
+    tech: 'Spring Boot 3 (Java 21)',
+    port: 'Puerto 8080',
+    description: 'API REST y lógica de negocio principal'
+  },
+  {
+    icon: '🐍',
+    title: 'Data Science',
+    tech: 'FastAPI (Python 3.13)',
+    port: 'Puerto 8000',
+    description: 'Microservicio con modelo ML entrenado'
+  },
+  {
+    icon: '🗄️',
+    title: 'Database',
+    tech: 'PostgreSQL 15',
+    port: 'Puerto 5432',
+    description: 'Persistencia de datos y predicciones'
+  }
+]
+
+const modelStats = [
+  { label: 'Precisión', value: '94%', icon: '🎯' },
+  { label: 'Análisis', value: '<200ms', icon: '⚡' },
+  { label: 'Seguridad', value: 'Enterprise', icon: '🛡️' },
+  { label: 'ML', value: 'Avanzado', icon: '🧠' }
+]
+
+const features = [
+  {
+    icon: '⚡',
+    title: 'Análisis en Tiempo Real',
+    description: 'Procesa datos instantáneamente con nuestro motor de ML optimizado'
+  },
+  {
+    icon: '🎯',
+    title: 'Predicciones Precisas',
+    description: 'Modelo entrenado que alcanza 94% de precisión en identificación de churn'
+  },
+  {
+    icon: '🔐',
+    title: 'Seguridad Enterprise',
+    description: 'Validación estricta de datos con estándares de seguridad internacionales'
+  },
+  {
+    icon: '📊',
+    title: 'Visualización Intuitiva',
+    description: 'Dashboards modernos que muestran resultados de forma clara y accionable'
+  },
+  {
+    icon: '🐳',
+    title: 'Escalable con Docker',
+    description: 'Orquestación completa con Docker Compose para cualquier entorno'
+  },
+  {
+    icon: '🚀',
+    title: 'Deploy Rápido',
+    description: 'Modo híbrido o full Docker para máxima flexibilidad en desarrollo'
+  }
+]
 </script>
 
 <template>
-  <div class="home-container">
-    <div class="hero-section">
-      <div class="hero-content">
-        <h1>🔮 ChurnInsight</h1>
-        <p class="tagline">Predicción Inteligente de Retención de Clientes</p>
-        <p class="description">
-          Utiliza inteligencia artificial para predecir qué clientes tienen riesgo de abandonar tu negocio.
-          Toma decisiones informadas y mejora la retención de clientes.
+  <div class="home-view">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="bg-effects">
+        <div class="glow-spot top-left"></div>
+        <div class="glow-spot bottom-right"></div>
+        <div class="grid-pattern"></div>
+      </div>
+
+      <div class="hero-container">
+        <div class="system-status">
+          ChurnInsight Predict • v1.0.0
+        </div>
+
+        <h1 class="title">
+          Bienvenido a <span class="brand">ChurnInsight</span>
+        </h1>
+        
+        <p class="subtitle">
+          Tu centro de control para la retención de clientes. Detecta patrones de fuga con <strong>94% de precisión</strong> usando IA avanzada.
         </p>
 
-        <router-link to="/churn" class="btn-primary">
-          Comenzar Predicción → 
-        </router-link>
+        <div class="model-stats">
+          <div v-for="stat in modelStats" :key="stat.label" class="stat-badge">
+            <span class="stat-emoji">{{ stat.icon }}</span>
+            <div class="stat-content">
+              <div class="stat-label">{{ stat.label }}</div>
+              <div class="stat-value">{{ stat.value }}</div>
+            </div>
+          </div>
+        </div>
+
+        <button @click="irAPrediccion" class="cta-button primary">
+          <span>🔮</span> Iniciar Predicción
+        </button>
+      </div>
+    </section>
+
+    <!-- Arquitectura Section -->
+    <section class="architecture-section">
+      <div class="section-header">
+        <h2>Arquitectura Integrada</h2>
+        <p>Orquestación con Docker para máxima escalabilidad</p>
       </div>
 
-      <div class="hero-image">
-        <div class="image-placeholder">📊</div>
+      <div class="modules-grid">
+        <div v-for="module in architectureModules" :key="module.title" class="module-card">
+          <div class="module-icon">{{ module.icon }}</div>
+          <h3>{{ module.title }}</h3>
+          <div class="tech-stack">{{ module.tech }}</div>
+          <div class="port-badge">{{ module.port }}</div>
+          <p>{{ module.description }}</p>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="features-section">
-      <h2>Características</h2>
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="section-header">
+        <h2>Características Principales</h2>
+        <p>Herramientas poderosas para retener tus mejores clientes</p>
+      </div>
+
       <div class="features-grid">
-        <div class="feature-card">
-          <span class="feature-icon">⚡</span>
-          <h3>Rápido</h3>
-          <p>Obtén predicciones en segundos con nuestro modelo de IA optimizado.</p>
-        </div>
-
-        <div class="feature-card">
-          <span class="feature-icon">🎯</span>
-          <h3>Preciso</h3>
-          <p>Modelo entrenado con datos reales para máxima precisión.</p>
-        </div>
-
-        <div class="feature-card">
-          <span class="feature-icon">📈</span>
-          <h3>Analítico</h3>
-          <p>Analiza múltiples variables para entender mejor a tus clientes.</p>
-        </div>
-
-        <div class="feature-card">
-          <span class="feature-icon">🛡️</span>
-          <h3>Seguro</h3>
-          <p>Tus datos están protegidos y nunca se comparten.</p>
+        <div v-for="feature in features" :key="feature.title" class="feature-card">
+          <div class="feature-icon">{{ feature.icon }}</div>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="cta-section">
-      <h2>¿Listo para comenzar?</h2>
-      <p>Predice el riesgo de churn de tus clientes ahora mismo</p>
-      <router-link to="/churn" class="btn-large">
-        Ir a Predicción de Churn
-      </router-link>
-    </div>
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <h2>Comienza Ahora</h2>
+      <p>Realiza tu primera predicción de churn en segundos</p>
+      <button @click="irAPrediccion" class="cta-button large">
+        <span>🚀</span> Ir a Predicción
+      </button>
+    </section>
   </div>
 </template>
 
 <style scoped>
+/* ========================
+   GENERAL
+   ======================== */
+.home-view {
+  min-height: 100vh;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
 
-.home-container {
-  padding: 40px 20px;
-  max-width: 1200px;
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.section-header p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
   margin: 0 auto;
 }
 
-/* Hero Section */
+/* ========================
+   HERO SECTION
+   ======================== */
 .hero-section {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: center;
-  margin-bottom: 80px;
-  padding: 60px 0;
-}
-
-.hero-content h1 {
-  font-size: 3rem;
-  margin: 0 0 16px 0;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.tagline {
-  font-size: 1.3rem;
-  color: var(--text-primary);
-  margin: 0 0 16px 0;
-  font-weight: 600;
-}
-
-.description {
-  font-size: 1rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0 0 32px 0;
-}
-
-.btn-primary {
-  display: inline-block;
-  padding: 14px 32px;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-}
-
-.hero-image {
+  position: relative;
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--bg-white) 0%, rgba(99, 102, 241, 0.05) 100%);
+  border-bottom: 1px solid var(--border-color);
 }
 
-.image-placeholder {
-  font-size: 8rem;
-  opacity: 0.3;
-  animation: float 3s ease-in-out infinite;
+.bg-effects {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.glow-spot {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.15;
+}
+
+.top-left {
+  background: var(--primary-color);
+  top: -20%;
+  left: -10%;
+  animation: float 8s ease-in-out infinite;
+}
+
+.bottom-right {
+  background: var(--secondary-color);
+  bottom: -20%;
+  right: -10%;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+.grid-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
 }
 
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, 30px); }
 }
 
-/* Features Section */
-.features-section {
-  margin-bottom: 80px;
-}
-
-.features-section h2 {
+.hero-container {
+  position: relative;
+  z-index: 10;
   text-align: center;
-  font-size: 2rem;
+  max-width: 900px;
+  animation: slideDown 0.8s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.system-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  margin-bottom: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: var(--success-color);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--success-color);
+}
+
+.title {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+
+.brand {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 40px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.model-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
   margin-bottom: 50px;
-  color: var(--text-primary);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stat-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-white);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.stat-badge:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.stat-emoji {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  text-align: left;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* ========================
+   BUTTONS
+   ======================== */
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.cta-button.primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.cta-button.primary:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  filter: brightness(1.1);
+}
+
+.cta-button.large {
+  padding: 16px 40px;
+  font-size: 1.1rem;
+}
+
+/* ========================
+   ARCHITECTURE SECTION
+   ======================== */
+.architecture-section {
+  padding: 100px 20px;
+  background: var(--bg-body);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.module-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  padding: 32px 24px;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.module-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-8px);
+}
+
+.module-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.module-card h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.tech-stack {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.port-badge {
+  display: inline-block;
+  background: var(--hover-bg);
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin: 0 auto;
+}
+
+.module-card p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ========================
+   FEATURES SECTION
+   ======================== */
+.features-section {
+  padding: 100px 20px;
+  background: linear-gradient(135deg, var(--bg-body), var(--bg-white));
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
 }
 
 .feature-card {
-  padding: 30px;
   background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  padding: 32px 24px;
   border-radius: 12px;
-  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   text-align: center;
-  transition: all 0.2s;
 }
 
 .feature-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-lg);
 }
 
 .feature-icon {
   font-size: 2.5rem;
-  display: block;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .feature-card h3 {
-  margin: 0 0 12px 0;
-  color: var(--text-primary);
   font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
 }
 
 .feature-card p {
-  margin: 0;
   color: var(--text-secondary);
-  font-size: 0.95rem;
   line-height: 1.6;
+  font-size: 0.95rem;
+  margin: 0;
 }
 
-/* CTA Section */
+/* ========================
+   CTA SECTION
+   ======================== */
 .cta-section {
+  padding: 100px 20px;
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: white;
-  padding: 60px 40px;
-  border-radius: 12px;
   text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .cta-section h2 {
-  font-size: 2rem;
-  margin: 0 0 16px 0;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
 }
 
 .cta-section p {
   font-size: 1.1rem;
-  margin: 0 0 32px 0;
-  opacity: 0.9;
+  margin-bottom: 32px;
+  opacity: 0.95;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.btn-large {
-  display: inline-block;
-  padding: 16px 40px;
+.cta-section .cta-button {
   background: white;
   color: var(--primary-color);
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: 700;
-  transition: all 0.2s;
-  font-size: 1rem;
 }
 
-.btn-large:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+.cta-section .cta-button:hover {
+  background: rgba(255, 255, 255, 0.9);
+  filter: brightness(1);
 }
 
-/* Responsive */
+/* ========================
+   RESPONSIVE
+   ======================== */
 @media (max-width: 768px) {
-  .home-container {
-    padding: 20px 16px;
-  }
-
   .hero-section {
-    grid-template-columns: 1fr;
-    gap: 40px;
-    padding: 40px 0;
+    min-height: auto;
+    padding: 40px 20px 60px;
   }
 
-  .hero-content h1 {
+  .title {
     font-size: 2rem;
   }
 
-  .tagline {
-    font-size: 1.1rem;
+  .subtitle {
+    font-size: 1rem;
   }
 
-  .image-placeholder {
-    font-size: 5rem;
+  .model-stats {
+    grid-template-columns: repeat(2, 1fr);
+    margin-bottom: 30px;
   }
 
-  .features-section h2,
+  .stat-badge {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .stat-content {
+    text-align: center;
+  }
+
+  .architecture-section,
+  .features-section,
+  .cta-section {
+    padding: 60px 20px;
+  }
+
+  .section-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .modules-grid,
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .module-card,
+  .feature-card {
+    padding: 24px 16px;
+  }
+
   .cta-section h2 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-container {
+    padding: 0 15px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+  }
+
+  .model-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-badge {
+    padding: 12px;
+  }
+
+  .stat-emoji {
     font-size: 1.5rem;
   }
 
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .architecture-section,
+  .features-section,
   .cta-section {
-    padding: 40px 20px;
+    padding: 40px 16px;
   }
 
-  .features-grid {
-    gap: 20px;
+  .section-header h2 {
+    font-size: 1.5rem;
   }
 
-  .feature-card {
-    padding: 20px;
+  .cta-button {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+  }
+
+  .cta-button.large {
+    width: 100%;
   }
 }
 </style>
