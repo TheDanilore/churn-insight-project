@@ -249,7 +249,7 @@ select {
   transition: all 0.2s;
   background-color: var(--bg-white);
   font-family: inherit;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }
 
 input:focus,
