@@ -25,28 +25,32 @@ public class PredictionService {
     }
 
     public ChurnResponseDTO obtenerPrediccion(ChurnRequestDTO request) {
+        ChurnResponseDTO response;
         try {
-            // Llamamos a la IA y guardamos la respuesta en una VARIABLE
-            ChurnResponseDTO response = webClient.post()
+            // 1. Intentamos llamar a la IA
+            response = webClient.post()
                     .uri("/predict")
                     .bodyValue(request)
                     .retrieve()
                     .bodyToMono(ChurnResponseDTO.class)
                     .block(); // Esperamos la respuesta
-
-            // Ahora sí podemos guardar (porque ya tenemos la respuesta 'response')
-            guardarEnHistorial(request, response);
-
-            // Finalmente devolvemos la respuesta al usuario
-            return response;
-
         } catch (WebClientResponseException e) {
-            // Si Python responde con error (4xx, 5xx), lo capturamos aquí
             System.err.println("Error llamando a IA: " + e.getResponseBodyAsString());
             throw new RuntimeException("El servicio de IA falló: " + e.getStatusCode());
         } catch (Exception e) {
-            throw new RuntimeException("Error de conexión con el servicio de IA");
+            // Logueamos el error real para depurar
+            System.err.println("Error de conexión con IA: " + e.getMessage());
+            throw new RuntimeException("Error de conexión con el servicio de IA", e);
         }
+
+        // 2. Intentar guardar (Fuera del catch principal para que no mate la respuesta)
+        if (response != null) {
+            guardarEnHistorial(request, response);
+        }
+
+        // Finalmente devolvemos la respuesta al usuario
+        return response;
+
     }
 
     // Método privado para mapear y guardar en la base de datos,

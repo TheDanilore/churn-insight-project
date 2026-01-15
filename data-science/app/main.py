@@ -1,7 +1,7 @@
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from typing import List
-from app.schemas import ChurnRequest, ChurnResponse
+from app.schemas import ChurnInput, ChurnOutput
 from app.services import churn_service
 
 app = FastAPI(title="ChurnInsight AI API", version="1.0.0")
@@ -16,12 +16,16 @@ def predict_churn(client_data: ChurnInput):
         print(f"❌ Error en predicción: {e}") # Log para ver error en consola docker
         raise HTTPException(status_code=500, detail=str(e))
 
-model = load_model()
 
-def _predict_dataframe(df:pd.DataFrame) -> List[ChurnResponse]:
+def _predict_dataframe(df:pd.DataFrame) -> List[ChurnOutput]:
     """
-        Función interna reutilizable para predecir uno o varios clientes.
+        Función interna que usa el modelo cargado en el servicio.
     """
+    # Usamos el modelo que ya vive dentro de churn_service
+    model = churn_service.model
+    if not model:
+        raise HTTPException(status_code=503, detail="Modelo no cargado")
+
     predictions = model.predict(df)
     probabilities = model.predict_proba(df)
 
@@ -33,7 +37,7 @@ def _predict_dataframe(df:pd.DataFrame) -> List[ChurnResponse]:
         alerta = "Alta" if prob_churn > 0.7 else "Baja"
 
         results.append(
-            ChurnResponse(
+            ChurnOutput(
                 prevision=label,
                 probabilidad=round(prob_churn, 4),
                 alerta=alerta,
@@ -42,8 +46,8 @@ def _predict_dataframe(df:pd.DataFrame) -> List[ChurnResponse]:
     return results
 
 
-@app.post("/predict/batch", response_model=List[ChurnResponse])
-def predict_batch(clients: List[ChurnRequest]):
+@app.post("/predict/batch", response_model=List[ChurnOutput])
+def predict_batch(clients: List[ChurnInput]):
     if not clients:
         raise HTTPException(
             status_code=400,
