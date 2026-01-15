@@ -8,7 +8,7 @@ import lombok.Data;
 @Entity
 @Table(name = "prediction_history") // Nombre de tabla más semántico
 @Data
-public class PredictionHistory {
+public class PredictionHistory{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

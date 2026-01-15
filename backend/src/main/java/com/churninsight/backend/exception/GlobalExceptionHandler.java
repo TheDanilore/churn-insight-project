@@ -42,6 +42,7 @@ public class GlobalExceptionHandler {
                 "Bad Request",
                 "Datos de entrada inválidos",
                 request.getRequestURI(),
+                request.getMethod(),
                 errors // Enviamos el detalle de qué campos fallaron
         );
 
@@ -61,6 +62,7 @@ public class GlobalExceptionHandler {
                 "Service Unavailable",
                 "El servicio de Inteligencia Artificial no está disponible en este momento. Intente más tarde.",
                 request.getRequestURI(),
+                request.getMethod(),
                 null
         );
 
@@ -80,6 +82,7 @@ public class GlobalExceptionHandler {
                 "Internal Server Error",
                 "Ocurrió un error inesperado en el servidor.",
                 request.getRequestURI(),
+                request.getMethod(),
                 null
         );
 

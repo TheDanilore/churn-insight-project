@@ -1,9 +1,8 @@
 package com.churninsight.backend.repository;
 
+import com.churninsight.backend.model.PredictionHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.churninsight.backend.model.PredictionHistory;
 
 @Repository
 public interface PredictionRepository extends JpaRepository<PredictionHistory, Long> {

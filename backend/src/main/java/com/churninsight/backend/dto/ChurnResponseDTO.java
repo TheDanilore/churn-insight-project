@@ -21,11 +21,11 @@ public record ChurnResponseDTO(
         // Asegurar que no haya nulls en la respuesta
         prevision = prevision != null ? prevision : "";
         probabilidad = probabilidad != null ? probabilidad : 0.0;
-        mensaje = mensaje != null ? mensaje : "";
+        alerta = alerta != null ? alerta : "";
 
         // Validar rango de probabilidad
-        if (probabilidad < 0.0 || probabilidad > 1.0) {
-            throw new IllegalArgumentException("La probabilidad debe estar entre 0.0 y 1.0");
+        if (probabilidad < -1.0 || probabilidad > 1.0) {
+            throw new IllegalArgumentException("La probabilidad debe estar entre 0.0 y 1.0 (o -1.0 para errores)");
         }
     }
     /**

@@ -1,5 +1,6 @@
 package com.churninsight.backend.service;
 
+import com.churninsight.backend.model.PredictionHistory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -7,7 +8,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import com.churninsight.backend.dto.ChurnRequestDTO;
 import com.churninsight.backend.dto.ChurnResponseDTO;
 import com.churninsight.backend.mapper.PredictionMapper;
-import com.churninsight.backend.model.PredictionHistory;
 import com.churninsight.backend.repository.PredictionRepository;
 
 @Service
