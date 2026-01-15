@@ -149,7 +149,11 @@ const enviarPrediccion = async () => {
         <div
           v-if="resultado"
           class="result-box"
-          :class="resultado.alerta === 'ALTA' ? 'risk-high' : 'risk-low'"
+          :class="{
+            'risk-high': resultado.alerta === 'ALTA',
+            'risk-medium': resultado.alerta === 'MEDIA',
+            'risk-low': resultado.alerta === 'BAJA',
+          }"
         >
           <h3>Resultado del Análisis</h3>
 
@@ -337,6 +341,12 @@ select:focus {
   background: linear-gradient(135deg, rgba(245, 101, 101, 0.1), rgba(245, 101, 101, 0.05));
   border-left-color: var(--danger-color);
   color: var(--danger-color);
+}
+
+.risk-medium {
+  background: linear-gradient(135deg, rgba(255, 206, 86, 0.1), rgba(255, 206, 86, 0.05));
+  border-left-color: #ffce56;
+  color: #b7791f;
 }
 
 .risk-low {
