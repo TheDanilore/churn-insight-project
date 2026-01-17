@@ -13,7 +13,7 @@ const {
 onMounted(() => {
   // Restaurar estado guardado
   syncWithBreakpoint()
-  
+
   // Listener para cambios de tamaño de ventana
   window.addEventListener('resize', handleWindowResize)
 })
@@ -33,7 +33,7 @@ const navigateTo = (path) => {
 </script>
 
 <template>
-  <aside 
+  <aside
     :class="['sidebar', { 'sidebar-collapsed': !sidebarVisible }]"
     :aria-label="sidebarVisible ? 'Navegación expandida' : 'Navegación contraída'"
   >
@@ -69,20 +69,21 @@ const navigateTo = (path) => {
         <span v-if="sidebarVisible" class="label">Predicción Churn</span>
       </router-link>
 
-      <!-- Próximamente: Importar Lote -->
-      <div 
-        class="nav-item disabled" 
-        title="Próximamente disponible"
-        role="menuitem"
-        aria-disabled="true"
+      <!-- Importar Lote -->
+      <div
+        to="/import-batch"
+        :class="['nav-item', { active: $route.path === '/import-batch' }]"
+        :aria-current="$route.path === '/import-batch' ? 'page' : undefined"
+        @click="navigateTo('/import-batch')"
+        title="Importar lote"
       >
         <span class="icon" aria-hidden="true">📁</span>
         <span v-if="sidebarVisible" class="label">Importar Lote</span>
       </div>
 
       <!-- Próximamente: Análisis -->
-      <div 
-        class="nav-item disabled" 
+      <div
+        class="nav-item disabled"
         title="Próximamente disponible"
         role="menuitem"
         aria-disabled="true"
