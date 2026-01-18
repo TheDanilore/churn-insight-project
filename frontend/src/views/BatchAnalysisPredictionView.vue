@@ -39,7 +39,7 @@ const procesarArchivo = async () => {
   try {
     const file = archivoSeleccionado.value
     const tipo = file.name.split('.').pop().toLowerCase()
-    
+
     let datos = []
 
     if (tipo === 'csv') {
@@ -88,7 +88,7 @@ const parsearCSV = (file) => {
         const csv = e.target.result
         const lines = csv.split('\n')
         const headers = lines[0].split(',').map(h => h.trim().toLowerCase())
-        
+
         const datos = []
         for (let i = 1; i < lines.length; i++) {
           if (lines[i].trim() === '') continue
@@ -172,8 +172,8 @@ const reiniciarLote = () => {
   <div class="batch-container">
     <div class="card">
       <div class="card-header">
-        <h2>📊 Importación por Lote</h2>
-        <p>Importa un CSV o Excel y obtén predicciones para múltiples clientes</p>
+        <h2>📄 Importación por Lote</h2>
+        <p>Sube un archivo CSV o Excel y obtén predicciones para múltiples clientes a la vez.</p>
       </div>
 
       <div class="card-body">
@@ -324,7 +324,7 @@ const reiniciarLote = () => {
 
 .batch-container {
   padding: 40px 20px;
-  max-width: 1200px;
+  max-width: 90vw;
   margin: 0 auto;
 }
 
@@ -366,6 +366,7 @@ const reiniciarLote = () => {
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: 24px;
+  background: var(--bg-light)
 }
 
 .upload-area:hover {
@@ -469,7 +470,7 @@ const reiniciarLote = () => {
 
 .btn-secondary:hover {
   background-color: var(--text-primary);
-  color: white;
+  color: var(--text-inverse);
   border-color: var(--text-primary);
 }
 

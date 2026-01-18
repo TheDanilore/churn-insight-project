@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/HomeView.vue'
 import Churn from '../views/ChurnPredictionView.vue'
-import BatchUploadView from '../views/BatchUploadView.vue'
+import BatchAnalysisPredictionView from '@/views/BatchAnalysisPredictionView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,7 +19,7 @@ const router = createRouter({
     {
       path: '/import-batch',
       name: 'import-batch',
-      component: BatchUploadView
+      component: BatchAnalysisPredictionView
     }
   ],
 })
