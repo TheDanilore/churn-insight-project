@@ -50,6 +50,10 @@ onMounted(() => {
   flex: 1;
   overflow-y: auto;
   background-color: var(--bg-body);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 @media (max-width: 768px) {

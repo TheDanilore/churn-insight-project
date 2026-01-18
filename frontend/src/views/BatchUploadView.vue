@@ -100,7 +100,7 @@ const reset = () => {
 .batch-upload-container {
   display: flex;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 4rem 2rem;
 }
 .card {
   background: var(--bg-white);

@@ -4,10 +4,7 @@ import { useRouter } from 'vue-router'
 import { useSidebarState } from '@/composables/useSidebarState'
 
 const router = useRouter()
-const {
-  sidebarOpen: sidebarVisible,
-  syncWithBreakpoint
-} = useSidebarState()
+const { sidebarOpen: sidebarVisible, syncWithBreakpoint } = useSidebarState()
 
 // Inicializar el estado cuando monta el componente
 onMounted(() => {
@@ -92,8 +89,6 @@ const navigateTo = (path) => {
         <span v-if="sidebarVisible" class="label">Análisis</span>
       </div>
     </nav>
-
-
   </aside>
 </template>
 
@@ -309,6 +304,18 @@ const navigateTo = (path) => {
   }
 
   .sidebar-collapsed {
+    width: 100%;
+  }
+
+  /* When expanded on mobile, switch to column to avoid going out of frame */
+  .sidebar:not(.sidebar-collapsed) {
+    flex-direction: column;
+    background: var(--bg-white);
+  }
+
+  .sidebar:not(.sidebar-collapsed) .sidebar-nav {
+    flex-direction: column;
+    overflow-y: auto;
     width: 100%;
   }
 
