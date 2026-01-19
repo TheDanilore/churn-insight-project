@@ -1,17 +1,31 @@
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from typing import List
-from app.schemas import ChurnRequest, ChurnResponse
+from app.schemas import ChurnInput, ChurnOutput
 from app.services import churn_service
 
 app = FastAPI(title="ChurnInsight AI API", version="1.0.0")
 
-model = load_model()
+@app.post("/predict", response_model=ChurnOutput)
+def predict_churn(client_data: ChurnInput):
+    try:
+        # FastAPI valida que client_data sea tipo ChurnInput automáticamente
+        result = churn_service.predict(client_data)
+        return result
+    except Exception as e:
+        print(f"❌ Error en predicción: {e}") # Log para ver error en consola docker
+        raise HTTPException(status_code=500, detail=str(e))
 
-def _predict_dataframe(df:pd.DataFrame) -> List[ChurnResponse]:
+
+def _predict_dataframe(df:pd.DataFrame) -> List[ChurnOutput]:
     """
-        Función interna reutilizable para predecir uno o varios clientes.
+        Función interna que usa el modelo cargado en el servicio.
     """
+    # Usamos el modelo que ya vive dentro de churn_service
+    model = churn_service.model
+    if not model:
+        raise HTTPException(status_code=503, detail="Modelo no cargado")
+
     predictions = model.predict(df)
     probabilities = model.predict_proba(df)
 
@@ -23,46 +37,46 @@ def _predict_dataframe(df:pd.DataFrame) -> List[ChurnResponse]:
         alerta = "Alta" if prob_churn > 0.7 else "Baja"
 
         results.append(
-         ChurnResponse(
-            prevision=label,
-            probabilidad=round(prob_churn, 4),
-            alerta=alerta,
-        ))
+            ChurnOutput(
+                prevision=label,
+                probabilidad=round(prob_churn, 4),
+                alerta=alerta,
+            ))
 
-       return results
+    return results
 
-       @app.post("/predict/batch", response_model=List[ChurnResponse])
-       def predict_batch(clients: List[ChurnRequest]):
-           if not clients:
-               raise HTTPException(
-               status code=400,
-               detail="La lista no puede estar vacia"
-               )
-       try:
-            # 1️ Pydantic → dict → DataFrame
-           data = [client.model_dump() for client in clients]
-           df = pd.DataFrame(data)
 
-           # 2️ Renombrar columnas
-                   df.rename(columns={
-                       "antiguedad": "tenure",
-                       "cargos_mensuales": "MonthlyCharges",
-                       "contrato": "Contract",
-                       "soporte_tecnico": "TechSupport",
-                       "servicio_internet": "InternetService",
-                       "metodo_pago": "PaymentMethod"
-                   }, inplace=True)
+@app.post("/predict/batch", response_model=List[ChurnOutput])
+def predict_batch(clients: List[ChurnInput]):
+    if not clients:
+        raise HTTPException(
+            status_code=400,
+            detail="La lista no puede estar vacia"
+        )
+    try:
+        # 1️ Pydantic → dict → DataFrame
+        data = [client.model_dump() for client in clients]
+        df = pd.DataFrame(data)
 
-           # 3️ Predicción
-           return _predict_dataframe(df)
+        # 2️ Renombrar columnas
+        df.rename(columns={
+            "antiguedad": "tenure",
+            "cargos_mensuales": "MonthlyCharges",
+            "contrato": "Contract",
+            "soporte_tecnico": "TechSupport",
+            "servicio_internet": "InternetService",
+            "metodo_pago": "PaymentMethod"
+        }, inplace=True)
 
-       except Exception as e:
-           # Si falla algo en la matriz (ej: columna faltante), devolvemos error 500
+        # 3️ Predicción
+        return _predict_dataframe(df)
 
-           raise HTTPException(
-           status_code=500,
-           detail=f"Error procesando el lote: {str(e)}"
-           )
+    except Exception as e:
+        # Si falla algo en la matriz (ej: columna faltante), devolvemos error 500
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error procesando el lote: {str(e)}"
+        )
 
 
 @app.get("/health")

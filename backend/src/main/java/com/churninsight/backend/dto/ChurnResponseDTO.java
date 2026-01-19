@@ -11,7 +11,7 @@ public record ChurnResponseDTO(
     @JsonProperty("probabilidad")
     Double probabilidad,
 
-    @JsonProperty("mensaje")// Ej: 0.85
+    @JsonProperty("alerta")// Ej: 0.85
     String alerta         // Ej: "ALTA" (Para que el Frontend sepa si pintar Rojo o Verde)
 )
         implements Serializable{

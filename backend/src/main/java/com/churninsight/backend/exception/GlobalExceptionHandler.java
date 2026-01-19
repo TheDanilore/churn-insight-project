@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGeneralErrors(Exception ex, HttpServletRequest request) {
 
-        logger.error("❌ Error interno no controlado: ", ex); // Importante loguear el stack trace aquí
+        logger.error("❌ Error interno no controlado en {}: {}", request.getRequestURI(), ex.getMessage(), ex); // Importante loguear el stack trace aquí
 
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(
                 LocalDateTime.now(),
