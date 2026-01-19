@@ -16,7 +16,11 @@ public interface PredictionMapper {
     // Mapeos explícitos (Solo si los nombres no coinciden)
     // Como en el DTO es 'prevision' y en Entity es 'resultado', hay que decirlo:
     @Mapping(source = "res.prevision", target = "resultado")
-    
+
+    // Ignoramos campos generados automáticamente por la DB/Entity
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "fechaRegistro", ignore = true)
+
     // Los demás campos (antiguedad, contrato, etc.) se mapean SOLOS porque se llaman igual.
     PredictionHistory toEntity(ChurnRequestDTO req, ChurnResponseDTO res);
 }

@@ -50,7 +50,7 @@ Lo mismo en la carpeta `frontend/`.
 3.  **Inicia el Frontend (Vue):**
     * Entra a la carpeta: `cd frontend`
     * Instala: `pnpm install` (o npm install)
-    * Ejecuta: `pnpm dev`
+    * Ejecuta: `pnpm dev` (o npm run dev)
     * 🔗*Web:* http://localhost:5173
 
 

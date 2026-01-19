@@ -57,70 +57,84 @@ const enviarPrediccion = async () => {
       </div>
 
       <div class="card-body">
-        <form @submit.prevent="enviarPrediccion">
+        <form @submit.prevent="enviarPrediccion" name="churn-form">
           <div class="form-grid">
             <div class="form-group">
-              <label>Antigüedad (Meses)</label>
-              <input
-                type="number"
-                v-model="formData.antiguedad"
-                :class="{ 'input-error': errores.antiguedad }"
-                min="0"
-                required
-              />
+              <label class="form-label"
+                >Antigüedad (Meses)
+                <input
+                  name="antiguedad"
+                  type="number"
+                  v-model="formData.antiguedad"
+                  :class="{ 'input-error': errores.antiguedad }"
+                  min="0"
+                  required
+                />
+              </label>
               <span v-if="errores.antiguedad" class="error-text">{{ errores.antiguedad }}</span>
             </div>
 
             <div class="form-group">
-              <label>Cargos Mensuales ($)</label>
-              <input
-                type="number"
-                v-model="formData.cargos_mensuales"
-                :class="{ 'input-error': errores.cargosMensuales }"
-                step="0.1"
-                min="0"
-                required
-              />
+              <label class="form-label"
+                >Cargos Mensuales ($)
+                <input
+                  name="cargos-mensuales"
+                  type="number"
+                  v-model="formData.cargos_mensuales"
+                  :class="{ 'input-error': errores.cargosMensuales }"
+                  step="0.1"
+                  min="0"
+                  required
+                />
+              </label>
               <span v-if="errores.cargosMensuales" class="error-text">{{
                 errores.cargosMensuales
               }}</span>
             </div>
 
             <div class="form-group">
-              <label>Tipo de Contrato</label>
-              <select v-model="formData.contrato">
-                <option value="Month-to-month">Mes a Mes</option>
-                <option value="One year">Un Año</option>
-                <option value="Two year">Dos Años</option>
-              </select>
+              <label class="form-label"
+                >Tipo de Contrato
+                <select v-model="formData.contrato" name="tipo-contrato">
+                  <option value="Month-to-month">Mes a Mes</option>
+                  <option value="One year">Un Año</option>
+                  <option value="Two year">Dos Años</option>
+                </select>
+              </label>
             </div>
 
             <div class="form-group">
-              <label>Soporte Técnico</label>
-              <select v-model="formData.soporte_tecnico">
-                <option value="Yes">Sí</option>
-                <option value="No">No</option>
-                <option value="No internet service">Sin servicio</option>
-              </select>
+              <label class="form-label"
+                >Soporte Técnico
+                <select v-model="formData.soporte_tecnico" name="soporte-tecnico">
+                  <option value="Yes">Sí</option>
+                  <option value="No">No</option>
+                  <option value="No internet service">Sin servicio</option>
+                </select>
+              </label>
             </div>
 
             <div class="form-group">
-              <label>Servicio de Internet</label>
-              <select v-model="formData.servicio_internet">
-                <option value="Fiber optic">Fibra Óptica</option>
-                <option value="DSL">DSL</option>
-                <option value="No">No tiene</option>
-              </select>
+              <label class="form-label"
+                >Servicio de Internet
+                <select v-model="formData.servicio_internet" name="servicio-internet">
+                  <option value="Fiber optic">Fibra Óptica</option>
+                  <option value="DSL">DSL</option>
+                  <option value="No">No tiene</option>
+                </select>
+              </label>
             </div>
 
             <div class="form-group">
-              <label>Método de Pago</label>
-              <select v-model="formData.metodo_pago">
-                <option value="Electronic check">Cheque Electrónico</option>
-                <option value="Credit card (automatic)">Tarjeta de Crédito</option>
-                <option value="Bank transfer (automatic)">Transferencia</option>
-                <option value="Mailed check">Cheque por Correo</option>
-              </select>
+              <label class="form-label"
+                >Método de Pago
+                <select v-model="formData.metodo_pago" name="metodo-pago">
+                  <option value="Electronic check">Cheque Electrónico</option>
+                  <option value="Credit card (automatic)">Tarjeta de Crédito</option>
+                  <option value="Bank transfer (automatic)">Transferencia</option>
+                  <option value="Mailed check">Cheque por Correo</option>
+                </select>
+              </label>
             </div>
           </div>
 
@@ -135,7 +149,11 @@ const enviarPrediccion = async () => {
         <div
           v-if="resultado"
           class="result-box"
-          :class="resultado.alerta === 'ALTA' ? 'risk-high' : 'risk-low'"
+          :class="{
+            'risk-high': resultado.alerta === 'ALTA',
+            'risk-medium': resultado.alerta === 'MEDIA',
+            'risk-low': resultado.alerta === 'BAJA',
+          }"
         >
           <h3>Resultado del Análisis</h3>
 
@@ -171,7 +189,9 @@ const enviarPrediccion = async () => {
   border-radius: 16px;
   box-shadow: var(--shadow-md);
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .card:hover {
@@ -209,7 +229,8 @@ const enviarPrediccion = async () => {
   margin-bottom: 24px;
 }
 
-.form-group {
+.form-group,
+.form-label {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -232,6 +253,7 @@ select {
   transition: all 0.2s;
   background-color: var(--bg-white);
   font-family: inherit;
+  color: var(--text-secondary);
 }
 
 input:focus,
@@ -319,6 +341,12 @@ select:focus {
   background: linear-gradient(135deg, rgba(245, 101, 101, 0.1), rgba(245, 101, 101, 0.05));
   border-left-color: var(--danger-color);
   color: var(--danger-color);
+}
+
+.risk-medium {
+  background: linear-gradient(135deg, rgba(255, 206, 86, 0.1), rgba(255, 206, 86, 0.05));
+  border-left-color: #ffce56;
+  color: #b7791f;
 }
 
 .risk-low {
