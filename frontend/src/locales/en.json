@@ -1,0 +1,198 @@
+{
+  "home": {
+    "hero": {
+      "status": "ChurnInsight Predict • v1.0.0",
+      "title_welcome": "Welcome to",
+      "subtitle": "Your control center for customer retention. Detect churn patterns with {precision} accuracy using advanced AI.",
+      "cta_button": "Start Prediction"
+    },
+    "stats": {
+      "precision": "Accuracy",
+      "analysis": "Analytics",
+      "security": "Security",
+      "ml": "ML",
+      "advanced": "Advanced"
+    },
+    "architecture": {
+      "title": "Integrated Architecture",
+      "subtitle": "Docker orchestration for maximum scalability",
+      "port": "Port",
+      "modules": {
+        "frontend": "Intuitive user interface for analysis",
+        "backend": "REST API and core business logic",
+        "ds": "Microservice with trained ML model",
+        "db": "Data and prediction persistence"
+      }
+    },
+    "features": {
+      "title": "Key Features",
+      "subtitle": "Powerful tools to retain your best customers",
+      "items": {
+        "real_time": {
+          "title": "Real-Time Analysis",
+          "desc": "Process data instantly with our optimized engine"
+        },
+        "precision": {
+          "title": "Accurate Predictions",
+          "desc": "Trained model achieving 94% accuracy"
+        },
+        "security": {
+          "title": "Enterprise-Grade Security",
+          "desc": "Strict data validation following international standards"
+        },
+        "viz": {
+          "title": "Intuitive Visualization",
+          "desc": "Modern dashboards with clear, actionable insights"
+        },
+        "docker": {
+          "title": "Docker-Scalable",
+          "desc": "Full orchestration for any environment"
+        },
+        "deploy": {
+          "title": "Fast Deployment",
+          "desc": "Maximum flexibility for development and deployment"
+        }
+      }
+    },
+    "cta_bottom": {
+      "title": "Get Started Now",
+      "subtitle": "Run your first churn prediction in seconds",
+      "button": "Go to Prediction"
+    }
+  },
+
+  "header": {
+    "user": "User",
+    "profile": "My Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "sidebar": {
+    "home": "Home",
+    "prediction": "Churn Prediction",
+    "batch": "Import Batch",
+    "analytics": "Analytics"
+  },
+  "churn_form": {
+    "header_title": "🔮 ChurnInsight AI",
+    "header_subtitle": "Customer Churn Prediction",
+    "labels": {
+      "tenure": "Tenure (Months)",
+      "monthly_charges": "Monthly Charges ($)",
+      "contract": "Contract Type",
+      "tech_support": "Tech Support",
+      "internet": "Internet Service",
+      "payment": "Payment Method"
+    },
+    "options": {
+      "contract": {
+        "month": "Month-to-Month",
+        "year": "One Year",
+        "two_year": "Two Years"
+      },
+      "tech": {
+        "yes": "Yes",
+        "no": "No",
+        "none": "No internet service"
+      },
+      "internet": {
+        "fiber": "Fiber Optic",
+        "dsl": "DSL",
+        "none": "No service"
+      },
+      "payment": {
+        "electronic": "Electronic Check",
+        "credit": "Credit Card",
+        "bank": "Bank Transfer",
+        "mail": "Mailed Check"
+      }
+    },
+    "buttons": {
+      "calculating": "⏳ Analyzing...",
+      "calculate": "✨ Calculate Risk"
+    },
+    "results": {
+      "title": "Analysis Result",
+      "prediction": "Forecast",
+      "probability": "Probability",
+      "alert_level": "Alert Level"
+    }
+  },
+  "api_data": {
+    "prevision": {
+      "Va a cancelar": "Likely to Churn",
+      "Se queda": "Likely to Stay"
+    },
+    "alerta": {
+      "ALTA": "HIGH",
+      "MEDIA": "MEDIUM",
+      "BAJA": "LOW"
+    }
+  },
+  "footer": {
+    "made_with": "Made with",
+    "by": "by",
+    "at": "December 2025 - January 2026",
+    "rights": "All rights reserved"
+  },
+  "errors": {
+    "title": "Error",
+    "bad_request": "Invalid input data",
+    "ai_service_unavailable": "AI service is currently unavailable. Try again later.",
+    "internal_server_error": "An unexpected server error occurred.",
+    "connection_error": "Could not connect to the server.",
+    "fields": {
+      "antiguedad": "Tenure",
+      "contrato": "Contract",
+      "cargosMensuales": "Monthly Charges",
+      "soporte_tecnico": "Tech Support",
+      "servicio_internet": "Internet Service",
+      "metodo_pago": "Payment Method"
+    }
+  },
+  "validations": {
+    "required": "This field is required",
+    "min_0": "Can't be less than 0",
+    "max_72": "Can't be greater than 72 months",
+    "invalid_format": "Invalid format"
+  },
+  "batch": {
+    "title": "Batch Import",
+    "subtitle": "Upload a CSV or Excel file and get bulk predictions.",
+    "clients": "clients",
+    "upload": {
+      "select": "Select file",
+      "formats": "Supported formats: CSV, XLSX",
+      "hint": "or drag the file here",
+      "selected": "File selected"
+    },
+    "status": {
+      "processing": "Processing...",
+      "completed": "Completed",
+      "success": "Successful",
+      "errors": "Errors",
+      "high_risk": "High Risk"
+    },
+    "table": {
+      "charges": "Charges",
+      "prediction": "Prediction",
+      "probability": "Probability",
+      "alert_level": "Alert Level",
+      "status": "Status"
+    },
+    "actions": {
+      "process": "Process File",
+      "change": "Change File",
+      "download": "Download Results (CSV)",
+      "import_new": "Import Another File"
+    },
+    "errors": {
+      "invalid_type": "Please select a valid CSV or Excel file",
+      "no_file": "Please select a file first",
+      "empty_file": "The file does not contain valid data",
+      "reading_error": "Error reading the file content",
+      "parse_error": "Error parsing the CSV: ",
+      "api_error": "Error in row"
+    }
+  }
+}

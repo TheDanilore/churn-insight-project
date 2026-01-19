@@ -1,0 +1,198 @@
+{
+  "home": {
+    "hero": {
+      "status": "ChurnInsight Predict • v1.0.0",
+      "title_welcome": "Bienvenido a",
+      "subtitle": "Tu centro de control para la retención de clientes. Detecta patrones de fuga con {precision} de precisión usando IA avanzada.",
+      "cta_button": "Iniciar Predicción"
+    },
+    "stats": {
+      "precision": "Precisión",
+      "analysis": "Análisis",
+      "security": "Seguridad",
+      "ml": "ML",
+      "advanced": "Avanzado"
+    },
+    "architecture": {
+      "title": "Arquitectura Integrada",
+      "subtitle": "Orquestación con Docker para máxima escalabilidad",
+      "port": "Puerto",
+      "modules": {
+        "frontend": "Interfaz de usuario intuitiva para análisis",
+        "backend": "API REST y lógica de negocio principal",
+        "ds": "Microservicio con modelo ML entrenado",
+        "db": "Persistencia de datos y predicciones"
+      }
+    },
+    "features": {
+      "title": "Características Principales",
+      "subtitle": "Herramientas poderosas para retener tus mejores clientes",
+      "items": {
+        "real_time": {
+          "title": "Análisis en Tiempo Real",
+          "desc": "Procesa datos instantáneamente con nuestro motor optimizado"
+        },
+        "precision": {
+          "title": "Predicciones Precisas",
+          "desc": "Modelo entrenado que alcanza 94% de precisión"
+        },
+        "security": {
+          "title": "Seguridad Enterprise",
+          "desc": "Validación estricta de datos con estándares internacionales"
+        },
+        "viz": {
+          "title": "Visualización Intuitiva",
+          "desc": "Dashboards modernos con resultados claros y accionables"
+        },
+        "docker": {
+          "title": "Escalable con Docker",
+          "desc": "Orquestación completa para cualquier entorno"
+        },
+        "deploy": {
+          "title": "Deploy Rápido",
+          "desc": "Máxima flexibilidad en el desarrollo y despliegue"
+        }
+      }
+    },
+    "cta_bottom": {
+      "title": "Comienza Ahora",
+      "subtitle": "Realiza tu primera predicción de churn en segundos",
+      "button": "Ir a Predicción"
+    }
+  },
+  "header": {
+    "user": "Usuario",
+    "profile": "Mi Perfil",
+    "settings": "Configuración",
+    "logout": "Cerrar Sesión"
+  },
+  "sidebar": {
+    "home": "Inicio",
+    "prediction": "Predicción Churn",
+    "batch": "Importar Lote",
+    "analytics": "Análisis"
+  },
+  "churn_form": {
+    "header_title": "🔮 ChurnInsight IA",
+    "header_subtitle": "Predicción de Retención de Clientes",
+    "labels": {
+      "tenure": "Antigüedad (Meses)",
+      "monthly_charges": "Cargos Mensuales (USD)",
+      "contract": "Tipo de Contrato",
+      "tech_support": "Soporte Técnico",
+      "internet": "Servicio de Internet",
+      "payment": "Método de Pago"
+    },
+    "options": {
+      "contract": {
+        "month": "Mes a Mes",
+        "year": "Un Año",
+        "two_year": "Dos Años"
+      },
+      "tech": {
+        "yes": "Sí",
+        "no": "No",
+        "none": "Sin servicio"
+      },
+      "internet": {
+        "fiber": "Fibra Óptica",
+        "dsl": "DSL",
+        "none": "No tiene"
+      },
+      "payment": {
+        "electronic": "Cheque Electrónico",
+        "credit": "Tarjeta de Crédito",
+        "bank": "Transferencia",
+        "mail": "Cheque por Correo"
+      }
+    },
+    "buttons": {
+      "calculating": "⏳ Analizando...",
+      "calculate": "✨ Calcular Riesgo"
+    },
+    "results": {
+      "title": "Resultado del Análisis",
+      "prediction": "Previsión",
+      "probability": "Probabilidad",
+      "alert_level": "Nivel de Alerta"
+    }
+  },
+  "api_data": {
+    "prevision": {
+      "Va a cancelar": "Va a cancelar",
+      "Se queda": "Se queda"
+    },
+    "alerta": {
+      "ALTA": "ALTA",
+      "MEDIA": "MEDIA",
+      "BAJA": "BAJA"
+    }
+  },
+  "footer": {
+    "made_with": "Hecho con",
+    "by": "por",
+    "at": "Diciembre 2025 - Enero 2026",
+    "rights": "Todos los derechos reservados"
+  },
+  "errors": {
+    "title": "Error",
+    "bad_request": "Datos de entrada inválidos",
+    "ai_service_unavailable": "El servicio de IA no está disponible en este momento.",
+    "internal_server_error": "Ocurrió un error inesperado en el servidor.",
+    "connection_error": "No se pudo conectar con el servidor.",
+    "fields": {
+      "antiguedad": "Antigüedad",
+      "contrato": "Contrato",
+      "cargosMensuales": "Cargos Mensuales",
+      "soporte_tecnico": "Soporte Técnico",
+      "servicio_internet": "Internet",
+      "metodo_pago": "Método de Pago"
+    }
+  },
+  "validations": {
+    "required": "Este campo es obligatorio",
+    "min_0": "No puede ser un valor negativo",
+    "max_72": "No puede exceder los 72 meses",
+    "invalid_format": "Formato no válido"
+  },
+  "batch": {
+    "title": "Importación por Lote",
+    "subtitle": "Sube un archivo CSV o Excel y obtén predicciones para múltiples clientes a la vez.",
+    "clients": "clientes",
+    "upload": {
+      "select": "Selecciona un archivo",
+      "formats": "Formatos soportados: CSV, XLSX",
+      "hint": "o arrastra el archivo aquí",
+      "selected": "Archivo seleccionado"
+    },
+    "status": {
+      "processing": "Procesando...",
+      "completed": "Completado",
+      "success": "Exitosos",
+      "errors": "Errores",
+      "high_risk": "Riesgo Alto"
+    },
+    "table": {
+      "charges": "Cargos",
+      "prediction": "Predicción",
+      "probability": "Probabilidad",
+      "alert_level": "Alerta",
+      "status": "Estado"
+    },
+    "actions": {
+      "process": "Procesar Archivo",
+      "change": "Cambiar Archivo",
+      "download": "Descargar Resultados (CSV)",
+      "import_new": "Importar Otro Archivo"
+    },
+    "errors": {
+      "invalid_type": "Por favor selecciona un archivo CSV o Excel válido",
+      "no_file": "Selecciona un archivo primero",
+      "empty_file": "El archivo no contiene datos válidos",
+      "reading_error": "Error al leer el contenido del archivo",
+      "parse_error": "Error al parsear CSV: ",
+      "api_error": "Error en la fila"
+    }
+  }
+}
+

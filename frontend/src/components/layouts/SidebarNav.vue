@@ -51,7 +51,7 @@ const navigateTo = (path) => {
         title="Ir a inicio"
       >
         <span class="icon" aria-hidden="true">🏠</span>
-        <span v-if="sidebarVisible" class="label">Inicio</span>
+        <span v-if="sidebarVisible" class="label">{{ $t('sidebar.home') }}</span>
       </router-link>
 
       <!-- Predicción Churn -->
@@ -63,7 +63,7 @@ const navigateTo = (path) => {
         title="Predicción de Churn"
       >
         <span class="icon" aria-hidden="true">📊</span>
-        <span v-if="sidebarVisible" class="label">Predicción Churn</span>
+        <span v-if="sidebarVisible" class="label">{{ $t('sidebar.prediction') }}</span>
       </router-link>
 
       <!-- Importar Lote -->
@@ -75,7 +75,7 @@ const navigateTo = (path) => {
         title="Importar lote"
       >
         <span class="icon" aria-hidden="true">📁</span>
-        <span v-if="sidebarVisible" class="label">Importar Lote</span>
+        <span v-if="sidebarVisible" class="label">{{ $t('sidebar.batch') }}</span>
       </div>
 
       <!-- Próximamente: Análisis -->
@@ -86,7 +86,7 @@ const navigateTo = (path) => {
         aria-disabled="true"
       >
         <span class="icon" aria-hidden="true">📈</span>
-        <span v-if="sidebarVisible" class="label">Análisis</span>
+        <span v-if="sidebarVisible" class="label">{{ $t('sidebar.analytics') }}</span>
       </div>
     </nav>
   </aside>

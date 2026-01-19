@@ -2,7 +2,13 @@
   <header class="header">
     <div class="header-content">
       <!-- Sidebar Toggle -->
-      <button class="sidebar-toggle" @click="toggleSidebar" :aria-expanded="sidebarOpen" aria-label="Toggle sidebar" title="Toggle Sidebar">
+      <button
+        class="sidebar-toggle"
+        @click="toggleSidebar"
+        :aria-expanded="sidebarOpen"
+        aria-label="Toggle sidebar"
+        title="Toggle Sidebar"
+      >
         <svg
           width="20"
           height="20"
@@ -21,6 +27,11 @@
 
       <!-- Header Actions -->
       <div class="header-actions">
+        <!-- Language Selector -->
+        <select v-model="$i18n.locale" @change="saveLanguage" class="lang-select">
+          <option value="es">ES</option>
+          <option value="en">EN</option>
+        </select>
         <!-- Theme Toggle -->
         <button
           class="theme-toggle"
@@ -70,10 +81,16 @@
 
           <transition name="dropdown-fade">
             <div v-if="showUserMenu" class="dropdown user-dropdown">
-              <div class="dropdown-item" @click="$router.push('/profile')">👤 Mi Perfil</div>
-              <div class="dropdown-item" @click="$router.push('/settings')">⚙️ Configuración</div>
+              <div class="dropdown-item" @click="$router.push('/profile')">
+                👤 {{ $t('header.profile') }}
+              </div>
+              <div class="dropdown-item" @click="$router.push('/settings')">
+                ⚙️ {{ $t('header.settings') }}
+              </div>
               <div class="dropdown-divider"></div>
-              <div class="dropdown-item danger" @click="handleLogout">🚪 Cerrar Sesión</div>
+              <div class="dropdown-item danger" @click="handleLogout">
+                🚪 {{ $t('header.logout') }}
+              </div>
             </div>
           </transition>
         </div>
@@ -84,9 +101,15 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useSidebarState } from '@/composables/useSidebarState'
 
+const { locale } = useI18n()
+const { t } = useI18n()
+const saveLanguage = () => {
+  localStorage.setItem('lang', locale.value)
+}
 const router = useRouter()
 const showUserMenu = ref(false)
 const isDark = ref(false)
@@ -96,13 +119,15 @@ const { sidebarOpen, toggleSidebar } = useSidebarState()
 
 // Mock user data (replace with actual auth store if available)
 const user = ref({
-  name: 'Usuario',
-  email: 'usuario@example.com',
+  name: '',
+  email: '',
 })
 
 const displayName = computed(() => {
-  if (!user.value) return 'Usuario'
-  return user.value.name || user.value.email || 'Usuario'
+  if (!user.value || (!user.value.name && !user.value.email)) {
+    return t('header.user')
+  }
+  return user.value.name || user.value.email
 })
 
 const userInitials = computed(() => {
@@ -156,6 +181,21 @@ const handleLogout = async () => {
 </script>
 
 <style scoped>
+.lang-select {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-white);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.lang-select:hover {
+  border-color: var(--primary-color);
+}
+
 .header {
   position: sticky;
   top: 0;

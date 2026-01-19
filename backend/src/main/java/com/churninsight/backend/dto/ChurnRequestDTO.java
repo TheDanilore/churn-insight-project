@@ -18,8 +18,8 @@ public record ChurnRequestDTO(
     String contrato,
 
     @NotNull(message = "Los cargos mensuales son obligatorios")
-    @DecimalMin(value = "18.25", inclusive = true, message = "Los cargos mensuales no pueden ser menores a 18.25")
-    @DecimalMax(value = "118.75", inclusive = true, message = "Los cargos mensuales no pueden exceder 118.75")
+//    @DecimalMin(value = "18.25", inclusive = true, message = "Los cargos mensuales no pueden ser menores a 18.25")
+//    @DecimalMax(value = "118.75", inclusive = true, message = "Los cargos mensuales no pueden exceder 118.75")
     @JsonProperty("cargos_mensuales")
     Double cargosMensuales,
 

@@ -1,6 +1,11 @@
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useToast } from '@/composables/useToast'
 import churnService from '../services/churnService'
+
+const { t } = useI18n()
+const toast = useToast()
 
 // --- ESTADO ---
 const formData = ref({
@@ -31,6 +36,7 @@ const enviarPrediccion = async () => {
 
     // 3. ¡Éxito!
     resultado.value = data
+    toast.success(t('churn_form.results.title'))
   } catch (err) {
     console.error('Error capturado:', err)
 
@@ -38,9 +44,26 @@ const enviarPrediccion = async () => {
     if (err.validationErrors) {
       // Si Spring Boot nos devolvió errores de validación (400)
       errores.value = err.validationErrors
+      // Mapeamos las llaves de los campos para el Toast
+      const translatedErrors = {}
+      Object.keys(err.validationErrors).forEach((key) => {
+        const fieldName = t(`errors.fields.${key}`)
+        translatedErrors[fieldName] = err.validationErrors[key]
+      })
+
+      toast.validationError(translatedErrors)
     } else {
-      // Error de conexión o 500
-      errorGeneral.value = err.message || 'Ocurrió un error inesperado. Intente nuevamente.'
+      // 2. Errores generales (500, 503, conexión)
+      let msgKey = 'errors.internal_server_error'
+
+      if (err.status === 503) {
+        msgKey = 'errors.ai_service_unavailable'
+      } else if (err.message === 'No se pudo conectar con el servidor.') {
+        msgKey = 'errors.connection_error'
+      }
+
+      errorGeneral.value = t(msgKey)
+      toast.error(t(msgKey))
     }
   } finally {
     cargando.value = false
@@ -52,8 +75,8 @@ const enviarPrediccion = async () => {
   <div class="container">
     <div class="card">
       <div class="card-header">
-        <h2>🔮 ChurnInsight AI</h2>
-        <p>Predicción de Retención de Clientes</p>
+        <h2>{{ $t('churn_form.header_title') }}</h2>
+        <p>{{ $t('churn_form.header_subtitle') }}</p>
       </div>
 
       <div class="card-body">
@@ -61,7 +84,7 @@ const enviarPrediccion = async () => {
           <div class="form-grid">
             <div class="form-group">
               <label class="form-label"
-                >Antigüedad (Meses)
+                >{{ $t('churn_form.labels.tenure') }}
                 <input
                   name="antiguedad"
                   type="number"
@@ -76,7 +99,7 @@ const enviarPrediccion = async () => {
 
             <div class="form-group">
               <label class="form-label"
-                >Cargos Mensuales ($)
+                >{{ $t('churn_form.labels.monthly_charges') }}
                 <input
                   name="cargos-mensuales"
                   type="number"
@@ -94,53 +117,63 @@ const enviarPrediccion = async () => {
 
             <div class="form-group">
               <label class="form-label"
-                >Tipo de Contrato
+                >{{ $t('churn_form.labels.contract') }}
                 <select v-model="formData.contrato" name="tipo-contrato">
-                  <option value="Month-to-month">Mes a Mes</option>
-                  <option value="One year">Un Año</option>
-                  <option value="Two year">Dos Años</option>
+                  <option value="Month-to-month">
+                    {{ $t('churn_form.options.contract.month') }}
+                  </option>
+                  <option value="One year">{{ $t('churn_form.options.contract.year') }}</option>
+                  <option value="Two year">{{ $t('churn_form.options.contract.two_year') }}</option>
                 </select>
               </label>
             </div>
 
             <div class="form-group">
               <label class="form-label"
-                >Soporte Técnico
+                >{{ $t('churn_form.labels.tech_support') }}
                 <select v-model="formData.soporte_tecnico" name="soporte-tecnico">
-                  <option value="Yes">Sí</option>
-                  <option value="No">No</option>
-                  <option value="No internet service">Sin servicio</option>
+                  <option value="Yes">{{ $t('churn_form.options.tech.yes') }}</option>
+                  <option value="No">{{ $t('churn_form.options.tech.no') }}</option>
+                  <option value="No internet service">
+                    {{ $t('churn_form.options.tech.none') }}
+                  </option>
                 </select>
               </label>
             </div>
 
             <div class="form-group">
               <label class="form-label"
-                >Servicio de Internet
+                >{{ $t('churn_form.labels.internet') }}
                 <select v-model="formData.servicio_internet" name="servicio-internet">
-                  <option value="Fiber optic">Fibra Óptica</option>
-                  <option value="DSL">DSL</option>
-                  <option value="No">No tiene</option>
+                  <option value="Fiber optic">{{ $t('churn_form.options.internet.fiber') }}</option>
+                  <option value="DSL">{{ $t('churn_form.options.internet.dsl') }}</option>
+                  <option value="No">{{ $t('churn_form.options.internet.none') }}</option>
                 </select>
               </label>
             </div>
 
             <div class="form-group">
               <label class="form-label"
-                >Método de Pago
+                >{{ $t('churn_form.labels.payment') }}
                 <select v-model="formData.metodo_pago" name="metodo-pago">
-                  <option value="Electronic check">Cheque Electrónico</option>
-                  <option value="Credit card (automatic)">Tarjeta de Crédito</option>
-                  <option value="Bank transfer (automatic)">Transferencia</option>
-                  <option value="Mailed check">Cheque por Correo</option>
+                  <option value="Electronic check">
+                    {{ $t('churn_form.options.payment.electronic') }}
+                  </option>
+                  <option value="Credit card (automatic)">
+                    {{ $t('churn_form.options.payment.credit') }}
+                  </option>
+                  <option value="Bank transfer (automatic)">
+                    {{ $t('churn_form.options.payment.bank') }}
+                  </option>
+                  <option value="Mailed check">{{ $t('churn_form.options.payment.mail') }}</option>
                 </select>
               </label>
             </div>
           </div>
 
           <button type="submit" class="btn-submit" :disabled="cargando">
-            <span v-if="cargando">⏳ Analizando...</span>
-            <span v-else>✨ Calcular Riesgo</span>
+            <span v-if="cargando">{{ $t('churn_form.buttons.calculating') }}</span>
+            <span v-else>{{ $t('churn_form.buttons.calculate') }}</span>
           </button>
         </form>
 
@@ -155,20 +188,23 @@ const enviarPrediccion = async () => {
             'risk-low': resultado.alerta === 'BAJA',
           }"
         >
-          <h3>Resultado del Análisis</h3>
+          <h3>{{ $t('churn_form.results.title') }}</h3>
 
           <div class="stats">
             <div class="stat">
-              <span class="label">Previsión</span>
-              <strong class="value">{{ resultado.prevision }}</strong>
+              <span class="label">{{ $t('churn_form.results.prediction') }}</span>
+              <strong class="value"> {{ $t('api_data.prevision.' + resultado.prevision) }}</strong>
             </div>
             <div class="stat">
-              <span class="label">Probabilidad</span>
+              <span class="label">{{ $t('churn_form.results.probability') }}</span>
               <strong class="value">{{ (resultado.probabilidad * 100).toFixed(1) }}%</strong>
             </div>
           </div>
 
-          <div class="badge">Nivel de Alerta: {{ resultado.alerta }}</div>
+          <div class="badge">
+            {{ $t('churn_form.results.alert_level') }}:
+            {{ $t('api_data.alerta.' + resultado.alerta) }}
+          </div>
         </div>
       </div>
     </div>

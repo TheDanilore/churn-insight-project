@@ -2,10 +2,11 @@
   <footer class="footer">
     <div class="footer-content">
       <p class="footer-credit">
-        Hecho con <span class="heart">❤️</span> por <strong>Grupo 05 - Hackathon NoCountry</strong><br>
-        Diciembre 2025 - Enero 2026
+        {{ $t('footer.made_with') }} <span class="heart">❤️</span> {{ $t('footer.by') }}
+        <strong>Grupo 05 - Hackathon NoCountry</strong><br />
+        {{ $t('footer.at') }}
       </p>
-      <p class="footer-copyright">&copy; {{ currentYear }} Todos los derechos reservados</p>
+      <p class="footer-copyright">&copy; {{ currentYear }} {{ $t('footer.rights') }}</p>
     </div>
   </footer>
 </template>
@@ -50,7 +51,8 @@ const currentYear = computed(() => new Date().getFullYear())
 }
 
 @keyframes heartBeat {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   14% {

@@ -1,6 +1,11 @@
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useToast } from '@/composables/useToast'
 import churnService from '@/services/churnService'
+
+const { t } = useI18n()
+const toast = useToast()
 
 // --- ESTADO ---
 const archivoSeleccionado = ref(null)
@@ -19,7 +24,7 @@ const seleccionarArchivo = (event) => {
       archivoSeleccionado.value = file
       errorLote.value = null
     } else {
-      errorLote.value = 'Por favor selecciona un archivo CSV o Excel válido'
+      errorLote.value = t('batch.errors.invalid_type')
       archivoSeleccionado.value = null
     }
   }
@@ -27,7 +32,7 @@ const seleccionarArchivo = (event) => {
 
 const procesarArchivo = async () => {
   if (!archivoSeleccionado.value) {
-    errorLote.value = 'Selecciona un archivo primero'
+    errorLote.value = t('batch.errors.no_file')
     return
   }
 
@@ -49,7 +54,7 @@ const procesarArchivo = async () => {
     }
 
     if (!datos || datos.length === 0) {
-      throw new Error('El archivo no contiene datos válidos')
+      throw new Error(t('batch.errors.empty_file'))
     }
 
     // Procesar predicciones en lote
@@ -61,20 +66,21 @@ const procesarArchivo = async () => {
         resultadosLote.value.push({
           ...datos[i],
           ...resultado,
-          estado: 'exitoso'
+          estado: 'exitoso',
         })
       } catch (err) {
         resultadosLote.value.push({
           ...datos[i],
           estado: 'error',
-          error: err.message || 'Error en la predicción'
+          error: err.message || t('batch.errors.api_error'),
         })
       }
       progreso.value = Math.round(((i + 1) / datos.length) * 100)
     }
+    toast.success(t('batch.status.completed'))
   } catch (err) {
-    console.error('Error procesando archivo:', err)
-    errorLote.value = err.message || 'Error al procesar el archivo'
+    errorLote.value = err.message
+    toast.error(err.message)
   } finally {
     cargandoLote.value = false
   }
@@ -87,12 +93,12 @@ const parsearCSV = (file) => {
       try {
         const csv = e.target.result
         const lines = csv.split('\n')
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase())
+        const headers = lines[0].split(',').map((h) => h.trim().toLowerCase())
 
         const datos = []
         for (let i = 1; i < lines.length; i++) {
           if (lines[i].trim() === '') continue
-          const values = lines[i].split(',').map(v => v.trim())
+          const values = lines[i].split(',').map((v) => v.trim())
           const row = {}
           headers.forEach((header, idx) => {
             row[header] = values[idx]
@@ -101,10 +107,10 @@ const parsearCSV = (file) => {
         }
         resolve(datos)
       } catch (err) {
-        reject(new Error('Error al parsear CSV: ' + err.message))
+        reject(new Error(t('batch.errors.parse_error') + err.message))
       }
     }
-    reader.onerror = () => reject(new Error('Error al leer el archivo'))
+    reader.onerror = () => reject(new Error(t('batch.errors.reading_error')))
     reader.readAsText(file)
   })
 }
@@ -138,8 +144,19 @@ const descargarResultados = () => {
 }
 
 const generarCSVResultados = () => {
-  const headers = ['antiguedad', 'contrato', 'cargos_mensuales', 'soporte_tecnico', 'servicio_internet', 'metodo_pago', 'prediccion', 'probabilidad', 'alerta', 'estado']
-  const rows = resultadosLote.value.map(item => {
+  const headers = [
+    'antiguedad',
+    'contrato',
+    'cargos_mensuales',
+    'soporte_tecnico',
+    'servicio_internet',
+    'metodo_pago',
+    'prediccion',
+    'probabilidad',
+    'alerta',
+    'estado',
+  ]
+  const rows = resultadosLote.value.map((item) => {
     const values = [
       item.antiguedad || '',
       item.contrato || '',
@@ -150,9 +167,9 @@ const generarCSVResultados = () => {
       item.prevision || '',
       item.probabilidad ? (item.probabilidad * 100).toFixed(2) + '%' : '',
       item.alerta || '',
-      item.estado || ''
+      item.estado || '',
     ]
-    return values.map(v => `"${v}"`).join(',')
+    return values.map((v) => `"${v}"`).join(',')
   })
   return [headers.join(','), ...rows].join('\n')
 }
@@ -172,8 +189,8 @@ const reiniciarLote = () => {
   <div class="batch-container">
     <div class="card">
       <div class="card-header">
-        <h2>📄 Importación por Lote</h2>
-        <p>Sube un archivo CSV o Excel y obtén predicciones para múltiples clientes a la vez.</p>
+        <h2>📄 {{ $t('batch.title') }}</h2>
+        <p>{{ $t('batch.subtitle') }}</p>
       </div>
 
       <div class="card-body">
@@ -183,9 +200,9 @@ const reiniciarLote = () => {
             <label for="file-input" class="upload-label">
               <div class="upload-content">
                 <span class="upload-icon">📁</span>
-                <h3>Selecciona un archivo</h3>
-                <p>Formatos soportados: CSV, XLSX</p>
-                <p class="upload-hint">o arrastra el archivo aquí</p>
+                <h3>{{ $t('batch.upload.select') }}</h3>
+                <p>{{ $t('batch.upload.formats') }}</p>
+                <p class="upload-hint">{{ $t('batch.upload.hint') }}</p>
               </div>
               <input
                 ref="inputFileRef"
@@ -215,12 +232,10 @@ const reiniciarLote = () => {
 
           <div v-if="archivoSeleccionado" class="batch-actions">
             <button class="btn-primary" @click="procesarArchivo" :disabled="cargandoLote">
-              <span v-if="cargandoLote">⏳ Procesando...</span>
-              <span v-else>🚀 Procesar Archivo</span>
+              <span v-if="cargandoLote">⏳ {{ $t('batch.status.processing') }}</span>
+              <span v-else>🚀 {{ $t('batch.actions.process') }}</span>
             </button>
-            <button class="btn-secondary" @click="reiniciarLote">
-              🔄 Cambiar Archivo
-            </button>
+            <button class="btn-secondary" @click="reiniciarLote">🔄 {{ $t('batch.actions.change') }}</button>
           </div>
 
           <!-- BARRA DE PROGRESO -->
@@ -235,26 +250,28 @@ const reiniciarLote = () => {
         <!-- RESULTADOS DEL LOTE -->
         <div v-else class="batch-results-section">
           <div class="results-header">
-            <h3>📊 Resultados ({{ resultadosLote.length }} clientes)</h3>
+            <h3>
+              📊 {{ $t('batch.status.results') }} ({{ resultadosLote.length }}
+              {{ $t('batch.clients') }})
+            </h3>
             <div class="results-stats">
               <div class="stat-box">
                 <span class="stat-number">{{
-                  resultadosLote.filter(r => r.estado === 'exitoso').length
+                  resultadosLote.filter((r) => r.estado === 'exitoso').length
                 }}</span>
-                <span class="stat-text">Exitosos</span>
+                <span class="stat-text">{{ $t('batch.status.success') }}</span>
               </div>
               <div class="stat-box">
                 <span class="stat-number">{{
-                  resultadosLote.filter(r => r.estado === 'error').length
+                  resultadosLote.filter((r) => r.estado === 'error').length
                 }}</span>
-                <span class="stat-text">Errores</span>
+                <span class="stat-text">{{ $t('batch.status.errors') }}</span>
               </div>
               <div class="stat-box">
                 <span class="stat-number">{{
-                  resultadosLote.filter(r => r.estado === 'exitoso' && r.alerta === 'ALTA')
-                    .length
+                  resultadosLote.filter((r) => r.estado === 'exitoso' && r.alerta === 'ALTA').length
                 }}</span>
-                <span class="stat-text">Riesgo Alto</span>
+                <span class="stat-text">{{ $t('batch.status.high_risk') }}</span>
               </div>
             </div>
           </div>
@@ -264,13 +281,13 @@ const reiniciarLote = () => {
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Antigüedad</th>
-                  <th>Contrato</th>
-                  <th>Cargos</th>
-                  <th>Predicción</th>
-                  <th>Probabilidad</th>
-                  <th>Alerta</th>
-                  <th>Estado</th>
+                  <th>{{ $t('errors.fields.antiguedad') }}</th>
+                  <th>{{ $t('errors.fields.contrato') }}</th>
+                  <th>{{ $t('batch.table.charges') }}</th>
+                  <th>{{ $t('batch.table.prediction') }}</th>
+                  <th>{{ $t('batch.table.probability') }}</th>
+                  <th>{{ $t('batch.table.alert_level') }}</th>
+                  <th>{{ $t('batch.table.status') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -283,15 +300,15 @@ const reiniciarLote = () => {
                   <td>{{ item.antiguedad }}</td>
                   <td>{{ item.contrato }}</td>
                   <td>${{ parseFloat(item.cargos_mensuales).toFixed(2) }}</td>
-                  <td><strong>{{ item.prevision }}</strong></td>
-                  <td>{{ item.probabilidad ? (item.probabilidad * 100).toFixed(1) + '%' : 'N/A' }}</td>
                   <td>
-                    <span
-                      v-if="item.alerta"
-                      class="badge"
-                      :class="item.alerta.toLowerCase()"
-                    >
-                      {{ item.alerta }}
+                    <strong> {{ $t('api_data.prevision.' + item.prevision) }}</strong>
+                  </td>
+                  <td>
+                    {{ item.probabilidad ? (item.probabilidad * 100).toFixed(1) + '%' : 'N/A' }}
+                  </td>
+                  <td>
+                    <span v-if="item.alerta" class="badge" :class="item.alerta.toLowerCase()">
+                      {{ $t('api_data.alerta.' + item.alerta) }}
                     </span>
                     <span v-else class="badge error">Error</span>
                   </td>
@@ -307,10 +324,10 @@ const reiniciarLote = () => {
 
           <div class="results-actions">
             <button class="btn-primary" @click="descargarResultados">
-              📥 Descargar Resultados (CSV)
+              📥 {{ $t('batch.actions.download') }}
             </button>
             <button class="btn-secondary" @click="reiniciarLote">
-              🔄 Importar Otro Archivo
+              🔄 {{ $t('batch.actions.import_new') }}
             </button>
           </div>
         </div>
@@ -320,11 +337,10 @@ const reiniciarLote = () => {
 </template>
 
 <style scoped>
-
-
 .batch-container {
   padding: 40px 20px;
-  max-width: 90vw;
+  min-width: 50vw;
+  max-width:90vw;
   margin: 0 auto;
 }
 
@@ -366,7 +382,7 @@ const reiniciarLote = () => {
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: 24px;
-  background: var(--bg-light)
+  background: var(--bg-light);
 }
 
 .upload-area:hover {
@@ -441,7 +457,8 @@ const reiniciarLote = () => {
 }
 
 /* Buttons */
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   padding: 12px 24px;
   border: none;
   border-radius: 8px;

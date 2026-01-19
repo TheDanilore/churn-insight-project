@@ -1,6 +1,9 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const scrollProgress = ref(0)
@@ -21,76 +24,76 @@ onMounted(() => {
   })
 })
 
-const architectureModules = [
+const architectureModules = computed(() =>  [
   {
     icon: '🎨',
     title: 'Frontend',
     tech: 'Vue.js 3 + Vite',
-    port: 'Puerto 5173',
-    description: 'Panel intuitivo para predicciones y análisis',
+    port: `${t('home.architecture.port')} 5173`,
+    description: t('home.architecture.modules.frontend'),
   },
   {
     icon: '☕',
     title: 'Backend',
     tech: 'Spring Boot 3 (Java 21)',
-    port: 'Puerto 8080',
-    description: 'API REST y lógica de negocio principal',
+    port: `${t('home.architecture.port')} 8080`,
+    description: t('home.architecture.modules.backend'),
   },
   {
     icon: '🐍',
     title: 'Data Science',
     tech: 'FastAPI (Python 3.13)',
-    port: 'Puerto 8000',
-    description: 'Microservicio con modelo ML entrenado',
+    port: `${t('home.architecture.port')} 8000`,
+    description: t('home.architecture.modules.ds'),
   },
   {
     icon: '🗄️',
     title: 'Database',
     tech: 'PostgreSQL 15',
-    port: 'Puerto 5432',
-    description: 'Persistencia de datos y predicciones',
+    port: `${t('home.architecture.port')} 5432`,
+    description: t('home.architecture.modules.db'),
   },
-]
+])
 
-const modelStats = [
-  { label: 'Precisión', value: '94%', icon: '🎯' },
-  { label: 'Análisis', value: '<200ms', icon: '⚡' },
-  { label: 'Seguridad', value: 'Enterprise', icon: '🛡️' },
-  { label: 'ML', value: 'Avanzado', icon: '🧠' },
-]
+const modelStats = computed(() => [
+  { label: t('home.stats.precision'), value: '94%', icon: '🎯' },
+  { label: t('home.stats.analysis'), value: '<200ms', icon: '⚡' },
+  { label: t('home.stats.security'), value: 'Enterprise', icon: '🛡️' },
+  { label: t('home.stats.ml'), value: t('home.stats.advanced'), icon: '🧠' },
+])
 
-const features = [
+const features = computed(() =>  [
   {
     icon: '⚡',
-    title: 'Análisis en Tiempo Real',
-    description: 'Procesa datos instantáneamente con nuestro motor de ML optimizado',
+    title: t('home.features.items.real_time.title'),
+    description: t('home.features.items.real_time.desc'),
   },
   {
     icon: '🎯',
-    title: 'Predicciones Precisas',
-    description: 'Modelo entrenado que alcanza 94% de precisión en identificación de churn',
+    title: t('home.features.items.precision.title'),
+    description: t('home.features.items.precision.desc'),
   },
   {
     icon: '🔐',
-    title: 'Seguridad Enterprise',
-    description: 'Validación estricta de datos con estándares de seguridad internacionales',
+    title: t('home.features.items.security.title'),
+    description: t('home.features.items.security.desc'),
   },
   {
     icon: '📊',
-    title: 'Visualización Intuitiva',
-    description: 'Dashboards modernos que muestran resultados de forma clara y accionable',
+    title: t('home.features.items.viz.title'),
+    description: t('home.features.items.viz.desc'),
   },
   {
     icon: '🐳',
-    title: 'Escalable con Docker',
-    description: 'Orquestación completa con Docker Compose para cualquier entorno',
+    title: t('home.features.items.docker.title'),
+    description: t('home.features.items.docker.desc'),
   },
   {
     icon: '🚀',
-    title: 'Deploy Rápido',
-    description: 'Modo híbrido o full Docker para máxima flexibilidad en desarrollo',
+    title: t('home.features.items.deploy.title'),
+    description: t('home.features.items.deploy.desc'),
   },
-]
+])
 </script>
 
 <template>
@@ -107,13 +110,14 @@ const features = [
       </div>
 
       <div class="hero-container">
-        <div class="system-status">ChurnInsight Predict • v1.0.0</div>
+        <div class="system-status">{{ $t('home.hero.status') }}</div>
 
-        <h1 class="title">Bienvenido a <span class="brand">ChurnInsight</span></h1>
+        <h1 class="title">
+          {{ $t('home.hero.title_welcome') }} <span class="brand">ChurnInsight</span>
+        </h1>
 
         <p class="subtitle">
-          Tu centro de control para la retención de clientes. Detecta patrones de fuga con
-          <strong>94% de precisión</strong> usando IA avanzada.
+          {{ $t('home.hero.subtitle', { precision: '94%' }) }}
         </p>
 
         <div class="model-stats">
@@ -128,7 +132,7 @@ const features = [
 
         <button @click="irAPrediccion" class="cta-button primary">
           <span class="button-icon">🔮</span>
-          <span class="button-text">Iniciar Predicción</span>
+          <span class="button-text">{{ $t('home.hero.cta_button') }}</span>
         </button>
       </div>
     </section>
@@ -136,8 +140,8 @@ const features = [
     <!-- Arquitectura Section -->
     <section class="architecture-section">
       <div class="section-header">
-        <h2>Arquitectura Integrada</h2>
-        <p>Orquestación con Docker para máxima escalabilidad</p>
+        <h2>{{ $t('home.architecture.title') }}</h2>
+        <p>{{ $t('home.architecture.subtitle') }}</p>
       </div>
 
       <div class="modules-grid">
@@ -154,8 +158,8 @@ const features = [
     <!-- Features Section -->
     <section class="features-section">
       <div class="section-header">
-        <h2>Características Principales</h2>
-        <p>Herramientas poderosas para retener tus mejores clientes</p>
+        <h2>{{ $t('home.features.title') }}</h2>
+        <p>{{ $t('home.features.subtitle') }}</p>
       </div>
 
       <div class="features-grid">
@@ -169,11 +173,11 @@ const features = [
 
     <!-- CTA Section -->
     <section class="cta-section">
-      <h2>Comienza Ahora</h2>
-      <p>Realiza tu primera predicción de churn en segundos</p>
+      <h2>{{ $t('home.cta_bottom.title') }}</h2>
+      <p>{{ $t('home.cta_bottom.subtitle') }}</p>
       <button @click="irAPrediccion" class="cta-button large">
         <span class="button-icon">🚀</span>
-        <span class="button-text">Ir a Predicción</span>
+        <span class="button-text">{{ $t('home.cta_bottom.button') }}</span>
       </button>
     </section>
   </div>

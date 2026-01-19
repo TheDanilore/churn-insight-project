@@ -26,14 +26,12 @@ public class PredictionController {
     private static final Logger logger = LoggerFactory.getLogger(PredictionController.class);
     private final PredictionService predictionService;
 
-    // Inyección de dependencias por constructor
     public PredictionController(PredictionService predictionService) {
         this.predictionService = predictionService;
     }
 
     // Endpoint limpio: POST /api/v1/predictions (en lugar de /api/v1/predict)
     // En REST, se usan sustantivos (recursos), no verbos en la URL.
-    // El verbo HTTP (POST) ya indica la acción "Crear/Predecir".
     @Operation(summary = "Predecir Churn", description = "Analiza los datos de un cliente y devuelve la probabilidad de que cancele el servicio.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "✅ Predicción exitosa"),
