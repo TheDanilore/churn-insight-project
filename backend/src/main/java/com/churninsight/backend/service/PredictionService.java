@@ -1,14 +1,22 @@
 package com.churninsight.backend.service;
 
 import com.churninsight.backend.model.PredictionHistory;
+import com.churninsight.backend.dto.BatchPredictionResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.scheduling.annotation.Async;
 
 import com.churninsight.backend.dto.ChurnRequestDTO;
 import com.churninsight.backend.dto.ChurnResponseDTO;
 import com.churninsight.backend.mapper.PredictionMapper;
 import com.churninsight.backend.repository.PredictionRepository;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class PredictionService {

@@ -17,6 +17,16 @@ public class PredictionHistory{
     @Column(name = "fecha_registro", nullable = false, updatable = false)
     private LocalDateTime fechaRegistro;
 
+    // --- INFORMACIÓN DEL CLIENTE (Opcional) ---
+    @Column(name = "client_name")
+    private String clientName;
+    
+    @Column(name = "email")
+    private String email;
+    
+    @Column(name = "phone")
+    private String phone;
+
     // --- INPUTS (Lo que envió el usuario) ---
     private Integer antiguedad;
     private String contrato;

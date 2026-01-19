@@ -4,6 +4,9 @@ import churnService from '../services/churnService'
 
 // --- ESTADO ---
 const formData = ref({
+  client_name: '',
+  email: '',
+  phone: '',
   antiguedad: 0,
   contrato: 'Month-to-month',
   cargos_mensuales: 0,
@@ -58,83 +61,92 @@ const enviarPrediccion = async () => {
 
       <div class="card-body">
         <form @submit.prevent="enviarPrediccion" name="churn-form">
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label"
-                >Antigüedad (Meses)
-                <input
-                  name="antiguedad"
-                  type="number"
-                  v-model="formData.antiguedad"
-                  :class="{ 'input-error': errores.antiguedad }"
-                  min="0"
-                  required
-                />
-              </label>
-              <span v-if="errores.antiguedad" class="error-text">{{ errores.antiguedad }}</span>
-            </div>
+          <!-- SECCIÓN: INFORMACIÓN DEL CLIENTE (Opcional) -->
+          <div class="form-section">
+            <h3 class="section-title">📋 Información del Cliente (Opcional)</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nombre del Cliente
+                  <input name="client-name" type="text" v-model="formData.client_name" placeholder="Juan Pérez" />
+                </label>
+              </div>
 
-            <div class="form-group">
-              <label class="form-label"
-                >Cargos Mensuales ($)
-                <input
-                  name="cargos-mensuales"
-                  type="number"
-                  v-model="formData.cargos_mensuales"
-                  :class="{ 'input-error': errores.cargosMensuales }"
-                  step="0.1"
-                  min="0"
-                  required
-                />
-              </label>
-              <span v-if="errores.cargosMensuales" class="error-text">{{
-                errores.cargosMensuales
-              }}</span>
-            </div>
+              <div class="form-group">
+                <label class="form-label">Correo Electrónico
+                  <input name="email" type="email" v-model="formData.email" placeholder="juan@example.com" />
+                </label>
+              </div>
 
-            <div class="form-group">
-              <label class="form-label"
-                >Tipo de Contrato
-                <select v-model="formData.contrato" name="tipo-contrato">
-                  <option value="Month-to-month">Mes a Mes</option>
-                  <option value="One year">Un Año</option>
-                  <option value="Two year">Dos Años</option>
-                </select>
-              </label>
+              <div class="form-group">
+                <label class="form-label">Teléfono
+                  <input name="phone" type="tel" v-model="formData.phone" placeholder="+34-555-0101" />
+                </label>
+              </div>
             </div>
+          </div>
 
-            <div class="form-group">
-              <label class="form-label"
-                >Soporte Técnico
-                <select v-model="formData.soporte_tecnico" name="soporte-tecnico">
-                  <option value="Yes">Sí</option>
-                  <option value="No">No</option>
-                  <option value="No internet service">Sin servicio</option>
-                </select>
-              </label>
-            </div>
+          <!-- SECCIÓN: DATOS DE PREDICCIÓN (Requeridos) -->
+          <div class="form-section">
+            <h3 class="section-title">🔮 Datos de Predicción (Requeridos)</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Antigüedad (Meses)
+                  <input name="antiguedad" type="number" v-model="formData.antiguedad"
+                    :class="{ 'input-error': errores.antiguedad }" min="0" max="72" required />
+                </label>
+                <span v-if="errores.antiguedad" class="error-text">{{ errores.antiguedad }}</span>
+              </div>
 
-            <div class="form-group">
-              <label class="form-label"
-                >Servicio de Internet
-                <select v-model="formData.servicio_internet" name="servicio-internet">
-                  <option value="Fiber optic">Fibra Óptica</option>
-                  <option value="DSL">DSL</option>
-                  <option value="No">No tiene</option>
-                </select>
-              </label>
-            </div>
+              <div class="form-group">
+                <label class="form-label">Cargos Mensuales ($)
+                  <input name="cargos-mensuales" type="number" v-model="formData.cargos_mensuales"
+                    :class="{ 'input-error': errores.cargosMensuales }" step="0.01" min="18.25" max="118.75" required />
+                </label>
+                <span v-if="errores.cargosMensuales" class="error-text">{{
+                  errores.cargosMensuales
+                }}</span>
+              </div>
 
-            <div class="form-group">
-              <label class="form-label"
-                >Método de Pago
-                <select v-model="formData.metodo_pago" name="metodo-pago">
-                  <option value="Electronic check">Cheque Electrónico</option>
-                  <option value="Credit card (automatic)">Tarjeta de Crédito</option>
-                  <option value="Bank transfer (automatic)">Transferencia</option>
-                  <option value="Mailed check">Cheque por Correo</option>
-                </select>
-              </label>
+              <div class="form-group">
+                <label class="form-label">Tipo de Contrato
+                  <select v-model="formData.contrato" name="tipo-contrato">
+                    <option value="Month-to-month">Mes a Mes</option>
+                    <option value="One year">Un Año</option>
+                    <option value="Two year">Dos Años</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Soporte Técnico
+                  <select v-model="formData.soporte_tecnico" name="soporte-tecnico">
+                    <option value="Yes">Sí</option>
+                    <option value="No">No</option>
+                    <option value="No internet service">Sin servicio</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Servicio de Internet
+                  <select v-model="formData.servicio_internet" name="servicio-internet">
+                    <option value="Fiber optic">Fibra Óptica</option>
+                    <option value="DSL">DSL</option>
+                    <option value="No">No tiene</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Método de Pago
+                  <select v-model="formData.metodo_pago" name="metodo-pago">
+                    <option value="Electronic check">Cheque Electrónico</option>
+                    <option value="Credit card (automatic)">Tarjeta de Crédito</option>
+                    <option value="Bank transfer (automatic)">Transferencia</option>
+                    <option value="Mailed check">Cheque por Correo</option>
+                  </select>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -146,15 +158,11 @@ const enviarPrediccion = async () => {
 
         <div v-if="errorGeneral" class="alert error">⚠️ {{ errorGeneral }}</div>
 
-        <div
-          v-if="resultado"
-          class="result-box"
-          :class="{
-            'risk-high': resultado.alerta === 'ALTA',
-            'risk-medium': resultado.alerta === 'MEDIA',
-            'risk-low': resultado.alerta === 'BAJA',
-          }"
-        >
+        <div v-if="resultado" class="result-box" :class="{
+          'risk-high': resultado.alerta === 'ALTA',
+          'risk-medium': resultado.alerta === 'MEDIA',
+          'risk-low': resultado.alerta === 'BAJA',
+        }">
           <h3>Resultado del Análisis</h3>
 
           <div class="stats">
@@ -398,6 +406,7 @@ select:focus {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -409,6 +418,7 @@ select:focus {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

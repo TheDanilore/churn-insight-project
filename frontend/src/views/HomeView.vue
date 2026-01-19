@@ -201,7 +201,6 @@ const features = [
   min-height: 100vh;
   background-color: var(--bg-body);
   color: var(--text-primary);
-  overflow-x: hidden;
 }
 
 .section-header {

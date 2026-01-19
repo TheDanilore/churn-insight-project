@@ -1,3 +1,154 @@
+<template>
+  <div class="batch-container">
+    <div class="card">
+      <div class="card-header">
+        <h2>📊 Importación por Lote</h2>
+        <p>Importa un CSV o Excel y obtén predicciones para múltiples clientes</p>
+      </div>
+
+      <div class="card-body">
+        <!-- SECCIÓN DE CARGA -->
+        <div v-if="resultadosLote.length === 0" class="batch-upload-section">
+          <div class="upload-area">
+            <label for="file-input" class="upload-label">
+              <div class="upload-content">
+                <span class="upload-icon">📁</span>
+                <h3>Selecciona un archivo</h3>
+                <p>Formatos soportados: CSV, XLSX</p>
+                <p class="upload-hint">o arrastra el archivo aquí</p>
+              </div>
+              <input
+                ref="inputFileRef"
+                id="file-input"
+                type="file"
+                accept=".csv,.xlsx,.xls"
+                @change="seleccionarArchivo"
+                class="file-input"
+              />
+            </label>
+          </div>
+
+          <div v-if="archivoSeleccionado" class="file-selected">
+            <div class="file-info">
+              <span class="file-icon">📄</span>
+              <div>
+                <p class="file-name">{{ archivoSeleccionado.name }}</p>
+                <p class="file-size">{{ (archivoSeleccionado.size / 1024).toFixed(2) }} KB</p>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="errorLote" class="alert alert-error">
+            <span class="alert-icon">❌</span>
+            <span>{{ errorLote }}</span>
+          </div>
+
+          <div v-if="archivoSeleccionado" class="batch-actions">
+            <button class="btn-primary" @click="procesarArchivo" :disabled="cargandoLote">
+              <span v-if="cargandoLote">⏳ Procesando...</span>
+              <span v-else>🚀 Procesar Archivo</span>
+            </button>
+            <button class="btn-secondary" @click="reiniciarLote">
+              🔄 Cambiar Archivo
+            </button>
+          </div>
+
+          <!-- BARRA DE PROGRESO -->
+          <div v-if="cargandoLote" class="progress-section">
+            <div class="progress-bar">
+              <div class="progress-fill" :style="{ width: progreso + '%' }"></div>
+            </div>
+            <p class="progress-text">{{ progreso }}% Completado</p>
+          </div>
+        </div>
+
+        <!-- RESULTADOS DEL LOTE -->
+        <div v-else class="batch-results-section">
+          <div class="results-header">
+            <h3>📊 Resultados ({{ resultadosLote.length }} clientes)</h3>
+            <div class="results-stats">
+              <div class="stat-box">
+                <span class="stat-number">{{
+                  resultadosLote.filter(r => r.estado === 'exitoso').length
+                }}</span>
+                <span class="stat-text">Exitosos</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-number">{{
+                  resultadosLote.filter(r => r.estado === 'error').length
+                }}</span>
+                <span class="stat-text">Errores</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-number">{{
+                  resultadosLote.filter(r => r.estado === 'exitoso' && r.alerta === 'ALTA')
+                    .length
+                }}</span>
+                <span class="stat-text">Riesgo Alto</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="results-table-wrapper">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Antigüedad</th>
+                  <th>Contrato</th>
+                  <th>Cargos</th>
+                  <th>Predicción</th>
+                  <th>Probabilidad</th>
+                  <th>Alerta</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(item, idx) in resultadosLote"
+                  :key="idx"
+                  :class="['result-row', item.estado, item.alerta?.toLowerCase()]"
+                >
+                  <td>{{ idx + 1 }}</td>
+                  <td>{{ item.antiguedad }}</td>
+                  <td>{{ item.contrato }}</td>
+                  <td>${{ parseFloat(item.cargos_mensuales).toFixed(2) }}</td>
+                  <td><strong>{{ item.prevision }}</strong></td>
+                  <td>{{ item.probabilidad ? (item.probabilidad * 100).toFixed(1) + '%' : 'N/A' }}</td>
+                  <td>
+                    <span
+                      v-if="item.alerta"
+                      class="badge"
+                      :class="item.alerta.toLowerCase()"
+                    >
+                      {{ item.alerta }}
+                    </span>
+                    <span v-else class="badge error">Error</span>
+                  </td>
+                  <td>
+                    <span class="status" :class="item.estado">
+                      {{ item.estado === 'exitoso' ? '✓' : '✕' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="results-actions">
+            <button class="btn-primary" @click="descargarResultados">
+              📥 Descargar Resultados (CSV)
+            </button>
+            <button class="btn-secondary" @click="reiniciarLote">
+              🔄 Importar Otro Archivo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { ref } from 'vue'
 import churnService from '@/services/churnService'
@@ -168,160 +319,8 @@ const reiniciarLote = () => {
 }
 </script>
 
-<template>
-  <div class="batch-container">
-    <div class="card">
-      <div class="card-header">
-        <h2>📊 Importación por Lote</h2>
-        <p>Importa un CSV o Excel y obtén predicciones para múltiples clientes</p>
-      </div>
-
-      <div class="card-body">
-        <!-- SECCIÓN DE CARGA -->
-        <div v-if="resultadosLote.length === 0" class="batch-upload-section">
-          <div class="upload-area">
-            <label for="file-input" class="upload-label">
-              <div class="upload-content">
-                <span class="upload-icon">📁</span>
-                <h3>Selecciona un archivo</h3>
-                <p>Formatos soportados: CSV, XLSX</p>
-                <p class="upload-hint">o arrastra el archivo aquí</p>
-              </div>
-              <input
-                ref="inputFileRef"
-                id="file-input"
-                type="file"
-                accept=".csv,.xlsx,.xls"
-                @change="seleccionarArchivo"
-                class="file-input"
-              />
-            </label>
-          </div>
-
-          <div v-if="archivoSeleccionado" class="file-selected">
-            <div class="file-info">
-              <span class="file-icon">📄</span>
-              <div>
-                <p class="file-name">{{ archivoSeleccionado.name }}</p>
-                <p class="file-size">{{ (archivoSeleccionado.size / 1024).toFixed(2) }} KB</p>
-              </div>
-            </div>
-          </div>
-
-          <div v-if="errorLote" class="alert alert-error">
-            <span class="alert-icon">❌</span>
-            <span>{{ errorLote }}</span>
-          </div>
-
-          <div v-if="archivoSeleccionado" class="batch-actions">
-            <button class="btn-primary" @click="procesarArchivo" :disabled="cargandoLote">
-              <span v-if="cargandoLote">⏳ Procesando...</span>
-              <span v-else>🚀 Procesar Archivo</span>
-            </button>
-            <button class="btn-secondary" @click="reiniciarLote">
-              🔄 Cambiar Archivo
-            </button>
-          </div>
-
-          <!-- BARRA DE PROGRESO -->
-          <div v-if="cargandoLote" class="progress-section">
-            <div class="progress-bar">
-              <div class="progress-fill" :style="{ width: progreso + '%' }"></div>
-            </div>
-            <p class="progress-text">{{ progreso }}% Completado</p>
-          </div>
-        </div>
-
-        <!-- RESULTADOS DEL LOTE -->
-        <div v-else class="batch-results-section">
-          <div class="results-header">
-            <h3>📊 Resultados ({{ resultadosLote.length }} clientes)</h3>
-            <div class="results-stats">
-              <div class="stat-box">
-                <span class="stat-number">{{
-                  resultadosLote.filter(r => r.estado === 'exitoso').length
-                }}</span>
-                <span class="stat-text">Exitosos</span>
-              </div>
-              <div class="stat-box">
-                <span class="stat-number">{{
-                  resultadosLote.filter(r => r.estado === 'error').length
-                }}</span>
-                <span class="stat-text">Errores</span>
-              </div>
-              <div class="stat-box">
-                <span class="stat-number">{{
-                  resultadosLote.filter(r => r.estado === 'exitoso' && r.alerta === 'ALTA')
-                    .length
-                }}</span>
-                <span class="stat-text">Riesgo Alto</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="results-table-wrapper">
-            <table class="results-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Antigüedad</th>
-                  <th>Contrato</th>
-                  <th>Cargos</th>
-                  <th>Predicción</th>
-                  <th>Probabilidad</th>
-                  <th>Alerta</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(item, idx) in resultadosLote"
-                  :key="idx"
-                  :class="['result-row', item.estado, item.alerta?.toLowerCase()]"
-                >
-                  <td>{{ idx + 1 }}</td>
-                  <td>{{ item.antiguedad }}</td>
-                  <td>{{ item.contrato }}</td>
-                  <td>${{ parseFloat(item.cargos_mensuales).toFixed(2) }}</td>
-                  <td><strong>{{ item.prevision }}</strong></td>
-                  <td>{{ item.probabilidad ? (item.probabilidad * 100).toFixed(1) + '%' : 'N/A' }}</td>
-                  <td>
-                    <span
-                      v-if="item.alerta"
-                      class="badge"
-                      :class="item.alerta.toLowerCase()"
-                    >
-                      {{ item.alerta }}
-                    </span>
-                    <span v-else class="badge error">Error</span>
-                  </td>
-                  <td>
-                    <span class="status" :class="item.estado">
-                      {{ item.estado === 'exitoso' ? '✓' : '✕' }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="results-actions">
-            <button class="btn-primary" @click="descargarResultados">
-              📥 Descargar Resultados (CSV)
-            </button>
-            <button class="btn-secondary" @click="reiniciarLote">
-              🔄 Importar Otro Archivo
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
 
 <style scoped>
-
-
 .batch-container {
   padding: 40px 20px;
   max-width: 1200px;

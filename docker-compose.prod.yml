@@ -1,4 +1,20 @@
 services:
+  # 0. Redis (Para Caching y Queues)
+  redis:
+    image: "redis:alpine"
+    container_name: churn_redis
+    restart: always
+    expose:
+      - "6379"  # Solo visible en la red interna
+    volumes:
+      - redis_data:/data
+    networks:
+      - churn_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      retries: 3
+      timeout: 5s
+
   # 1. Base de Datos
   db:
     image: postgres:15-alpine
@@ -37,9 +53,12 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - AI_SERVICE_URL=http://ai-service:8000/
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=${REDIS_PORT:-6379}
     depends_on:
       - db
       - ai-service
+      - redis
     networks:
       - churn_network
 
@@ -59,6 +78,7 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
 
 networks:
   churn_network:

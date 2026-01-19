@@ -1,48 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-import api from '@/services/api'
-
-const fileInput = ref(null)
-const selectedFile = ref(null)
-const isDragging = ref(false)
-const uploadStatus = ref('idle') // idle, uploading, success, error
-const errorMessage = ref('')
-
-const handleFileSelect = (event) => {
-  const file = event.target.files[0]
-  if (file && file.type === 'text/csv') {
-    selectedFile.value = file
-    errorMessage.value = ''
-  } else {
-    errorMessage.value = 'Por favor, selecciona un archivo CSV válido.'
-  }
-}
-
-const uploadFile = async () => {
-  if (!selectedFile.value) return
-
-  uploadStatus.value = 'uploading'
-  const formData = new FormData()
-  formData.append('file', selectedFile.value)
-
-  try {
-    // Replace with your actual backend endpoint
-    await api.post('/predictions/batch', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-    uploadStatus.value = 'success'
-  } catch (error) {
-    uploadStatus.value = 'error'
-    errorMessage.value = error.response?.data?.message || 'Error al subir el archivo.'
-  }
-}
-
-const reset = () => {
-  selectedFile.value = null
-  uploadStatus.value = 'idle'
-}
-</script>
-
 <template>
   <div class="batch-upload-container">
     <div class="card">
@@ -95,6 +50,52 @@ const reset = () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import api from '@/services/api'
+
+const fileInput = ref(null)
+const selectedFile = ref(null)
+const isDragging = ref(false)
+const uploadStatus = ref('idle') // idle, uploading, success, error
+const errorMessage = ref('')
+
+const handleFileSelect = (event) => {
+  const file = event.target.files[0]
+  if (file && file.type === 'text/csv') {
+    selectedFile.value = file
+    errorMessage.value = ''
+  } else {
+    errorMessage.value = 'Por favor, selecciona un archivo CSV válido.'
+  }
+}
+
+const uploadFile = async () => {
+  if (!selectedFile.value) return
+
+  uploadStatus.value = 'uploading'
+  const formData = new FormData()
+  formData.append('file', selectedFile.value)
+
+  try {
+    // Replace with your actual backend endpoint
+    await api.post('/predictions/batch', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    uploadStatus.value = 'success'
+  } catch (error) {
+    uploadStatus.value = 'error'
+    errorMessage.value = error.response?.data?.message || 'Error al subir el archivo.'
+  }
+}
+
+const reset = () => {
+  selectedFile.value = null
+  uploadStatus.value = 'idle'
+}
+</script>
+
 
 <style scoped>
 .batch-upload-container {

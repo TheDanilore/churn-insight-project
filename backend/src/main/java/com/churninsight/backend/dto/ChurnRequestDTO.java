@@ -5,6 +5,15 @@ import jakarta.validation.constraints.*;
 import java.io.Serializable;
 
 public record ChurnRequestDTO(
+    @JsonProperty("client_name")
+    String clientName,
+
+    @JsonProperty("email")
+    String email,
+
+    @JsonProperty("phone")
+    String phone,
+
     @NotNull(message = "La antigüedad es obligatoria")
     @Min(value = 0, message = "La antigüedad no puede ser negativa")
     @Max(value = 72, message = "La antiguedad no puede exceder a 72 meses (6 años)")
@@ -43,6 +52,9 @@ public record ChurnRequestDTO(
 ) implements Serializable {
 
     public ChurnRequestDTO {
+        if (clientName != null) clientName = clientName.trim();
+        if (email != null) email = email.trim();
+        if (phone != null) phone = phone.trim();
         if (contrato != null) contrato = contrato.trim();
         if (soporteTecnico != null) soporteTecnico = soporteTecnico.trim();
         if (servicioInternet != null) servicioInternet = servicioInternet.trim();
@@ -50,8 +62,15 @@ public record ChurnRequestDTO(
     }
 
     public static ChurnRequestDTO of(
+            String clientName, String email, String phone,
             Integer antiguedad, String contrato, Double cargosMensuales,
             String soporteTecnico, String servicioInternet, String metodoPago) {
-        return new ChurnRequestDTO(antiguedad, contrato, cargosMensuales, soporteTecnico, servicioInternet, metodoPago);
+        return new ChurnRequestDTO(clientName, email, phone, antiguedad, contrato, cargosMensuales, soporteTecnico, servicioInternet, metodoPago);
+    }
+
+    public static ChurnRequestDTO of(
+            Integer antiguedad, String contrato, Double cargosMensuales,
+            String soporteTecnico, String servicioInternet, String metodoPago) {
+        return new ChurnRequestDTO(null, null, null, antiguedad, contrato, cargosMensuales, soporteTecnico, servicioInternet, metodoPago);
     }
 }

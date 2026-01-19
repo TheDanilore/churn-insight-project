@@ -1,12 +1,13 @@
-<script setup>
-import ChurnForm from '@/components/ChurnForm.vue'
-</script>
-
 <template>
   <div class="churn-view">
     <ChurnForm />
   </div>
 </template>
+
+<script setup>
+import ChurnForm from '@/components/ChurnForm.vue'
+</script>
+
 
 <style scoped>
 .churn-view {
