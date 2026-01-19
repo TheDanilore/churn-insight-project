@@ -1,127 +1,97 @@
 <template>
   <header class="header">
     <div class="header-content">
-      <!-- Sidebar Toggle -->
-      <button class="sidebar-toggle" @click="toggleSidebar" :aria-expanded="sidebarOpen" aria-label="Toggle sidebar" title="Toggle Sidebar">
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
+      <!-- Botón para toggle sidebar -->
+      <button
+        class="sidebar-toggle"
+        @click="$emit('toggleSidebar')"
+        title="Ocultar/Mostrar Sidebar"
+      >
+        <IconComponent name="menu" :size="22" />
       </button>
 
-      <div class="spacer"></div>
-
-      <!-- Header Actions -->
+      <!-- Acciones rápidas -->
       <div class="header-actions">
-        <!-- Theme Toggle -->
+        <!-- Toggle Tema -->
         <button
-          class="theme-toggle"
           @click="toggleTheme"
-          :title="isDark ? 'Light Mode' : 'Dark Mode'"
+          class="theme-toggle"
+          :aria-label="isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
         >
-          <svg
-            v-if="!isDark"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-          <svg
-            v-else
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
+          <IconComponent :name="isDark ? 'sun' : 'moon'" :size="20" />
         </button>
 
-        <!-- User Menu -->
+        <!-- Usuario con dropdown -->
         <div class="user-menu-wrapper">
-          <button class="user-menu" @click="toggleUserMenu">
+          <div class="user-menu" @click="toggleUserMenu">
             <div class="user-avatar">
-              {{ userInitials }}
+              U
             </div>
-            <span class="user-name">{{ displayName }}</span>
-          </button>
+            <span class="user-name">Usuario</span>
+            <IconComponent name="chevron-down" :size="16" />
+          </div>
 
-          <transition name="dropdown-fade">
+          <!-- Dropdown de usuario -->
+          <Transition name="dropdown-fade">
             <div v-if="showUserMenu" class="dropdown user-dropdown">
-              <div class="dropdown-item" @click="$router.push('/profile')">👤 Mi Perfil</div>
-              <div class="dropdown-item" @click="$router.push('/settings')">⚙️ Configuración</div>
-              <div class="dropdown-divider"></div>
-              <div class="dropdown-item danger" @click="handleLogout">🚪 Cerrar Sesión</div>
+              <a href="#" @click.prevent="handleLogout" class="dropdown-item">
+                <IconComponent name="log-out" :size="18" />
+                <span>Cerrar Sesión</span>
+              </a>
             </div>
-          </transition>
+          </Transition>
         </div>
       </div>
     </div>
+
+    <!-- Modal de confirmación -->
+    <ConfirmModal
+      ref="confirmModalRef"
+      title="Cerrar Sesión"
+      message="¿Estás seguro de que deseas cerrar sesión?"
+      confirm-text="Cerrar Sesión"
+      cancel-text="Cancelar"
+      type="warning"
+      icon="log-out"
+      @confirm="confirmLogout"
+      @cancel="cancelLogout"
+    />
   </header>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useSidebarState } from '@/composables/useSidebarState'
+import IconComponent from '@/components/icons/IconComponents.vue'
+import ConfirmModal from '@/components/modals/ConfirmModal.vue'
 
 const router = useRouter()
 const showUserMenu = ref(false)
 const isDark = ref(false)
+const confirmModalRef = ref(null)
 
-// Sidebar state
-const { sidebarOpen, toggleSidebar } = useSidebarState()
+// Use auth store with reactive getters
 
-// Mock user data (replace with actual auth store if available)
-const user = ref({
-  name: 'Usuario',
-  email: 'usuario@example.com',
-})
+// Computed properties for display
 
-const displayName = computed(() => {
-  if (!user.value) return 'Usuario'
-  return user.value.name || user.value.email || 'Usuario'
-})
+// Emitir evento al padre (MainLayout)
+defineEmits(['toggleSidebar'])
 
-const userInitials = computed(() => {
-  if (!user.value) return 'U'
-  const name = user.value.name || user.value.email || 'U'
-  return name.charAt(0).toUpperCase()
-})
-
+// Detectar tema inicial
 onMounted(() => {
+  // Verificar si hay preferencia guardada
   const savedTheme = localStorage.getItem('theme')
   if (savedTheme) {
     isDark.value = savedTheme === 'dark'
     document.documentElement.setAttribute('data-theme', savedTheme)
   } else {
+    // Por defecto iniciar en modo claro
     isDark.value = false
     document.documentElement.setAttribute('data-theme', 'light')
     localStorage.setItem('theme', 'light')
   }
 
+  // Cerrar dropdowns al hacer click fuera
   document.addEventListener('click', handleClickOutside)
 })
 
@@ -130,7 +100,10 @@ onUnmounted(() => {
 })
 
 const handleClickOutside = (e) => {
+  // Verificar si el click fue dentro de los wrappers
   const userMenuWrapper = e.target.closest('.user-menu-wrapper')
+
+  // Cerrar menú de usuario si el click no fue en su wrapper
   if (!userMenuWrapper) {
     showUserMenu.value = false
   }
@@ -148,10 +121,35 @@ const toggleUserMenu = () => {
 }
 
 const handleLogout = async () => {
+  // Cerrar menús inmediatamente
   showUserMenu.value = false
-  // Implement logout logic
-  localStorage.removeItem('auth_token')
-  router.push('/login')
+
+  // Mostrar modal de confirmación
+  confirmModalRef.value?.show()
+}
+
+const confirmLogout = async () => {
+  try {
+    // Ocultar modal y redirigir
+    confirmModalRef.value?.hide()
+
+    setTimeout(() => {
+      router.push({ name: 'login' }).catch(() => {
+        window.location.href = '/login'
+      })
+    }, 100)
+  } catch (err) {
+    console.error('Logout failed', err)
+    // Force redirect even on error
+    confirmModalRef.value?.hide()
+    router.push({ name: 'login' }).catch(() => {
+      window.location.href = '/login'
+    })
+  }
+}
+
+const cancelLogout = () => {
+  confirmModalRef.value?.hide()
 }
 </script>
 
@@ -162,7 +160,6 @@ const handleLogout = async () => {
   z-index: 998;
   background: var(--bg-white);
   border-bottom: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
 }
 
 .header-content {
@@ -173,6 +170,7 @@ const handleLogout = async () => {
   gap: 1rem;
 }
 
+/* Botón toggle sidebar */
 .sidebar-toggle {
   display: flex;
   align-items: center;
@@ -182,7 +180,7 @@ const handleLogout = async () => {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   transition: all 0.2s;
 }
 
@@ -195,10 +193,7 @@ const handleLogout = async () => {
   transform: scale(0.95);
 }
 
-.spacer {
-  flex: 1;
-}
-
+/* Toggle de tema */
 .theme-toggle {
   display: flex;
   align-items: center;
@@ -208,80 +203,115 @@ const handleLogout = async () => {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   transition: all 0.2s;
 }
 
 .theme-toggle:hover {
   color: var(--primary-color);
-  background-color: var(--hover-bg);
+  transform: rotate(50deg);
 }
 
 .theme-toggle:active {
   transform: scale(0.95);
 }
 
+/* Acciones del header */
 .header-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
+/* Wrappers para dropdowns */
+.header-action-wrapper,
 .user-menu-wrapper {
   position: relative;
 }
 
+.header-action {
+  position: relative;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: var(--text-secondary);
+}
+
+.header-action:hover {
+  background-color: var(--hover-bg);
+}
+
+.badge-dot {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  background: var(--danger-color);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.75rem;
+  min-width: 1.25rem;
+  text-align: center;
+}
+
+/* Menú de usuario */
 .user-menu {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  border-radius: 8px;
+  border-radius: var(--border-radius-lg);
   cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  background: transparent;
-  color: var(--text-primary);
-  font-family: inherit;
+  transition: background-color 0.2s;
 }
 
 .user-menu:hover {
-  background-color: var(--hover-bg);
+  background-color: var(--tertiary-bg);
 }
 
 .user-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  background: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-weight: 700;
-  font-size: 0.9rem;
 }
 
 .user-name {
-  font-size: 0.9rem;
   font-weight: 500;
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }
 
+/* Ocultar nombre de usuario y chevron en mobile */
+@media (max-width: 768px) {
+  .user-name,
+  .user-menu .icon-component:last-child {
+    display: none;
+  }
+
+  .user-menu {
+    padding: 0.5rem;
+  }
+}
+
+/* Dropdowns */
 .dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 0.5rem);
   right: 0;
   background: var(--bg-white);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  box-shadow: var(--shadow-md);
-  min-width: 200px;
-  z-index: 1000;
+  box-shadow: var(--shadow-lg);
+  min-width: 280px;
   animation: slideDown 0.2s ease;
+  z-index: 1000;
 }
 
 @keyframes slideDown {
@@ -289,27 +319,89 @@ const handleLogout = async () => {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.user-dropdown {
-  top: calc(100% + 8px);
-  right: 0;
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dropdown-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dropdown-header .badge {
+  background: var(--danger-color);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.notifications-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.notification-item:hover {
+  background-color: var(--hover-bg);
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-title {
+  margin: 0 0 0.25rem 0;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.notification-text {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.notification-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 .dropdown-item {
-  padding: 12px 16px;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
   color: var(--text-primary);
-  transition: all 0.2s;
-  font-size: 0.9rem;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  cursor: pointer;
 }
 
 .dropdown-item:hover {
@@ -317,42 +409,109 @@ const handleLogout = async () => {
   color: var(--primary-color);
 }
 
-.dropdown-item.danger {
-  color: var(--danger-color);
-}
-
-.dropdown-item.danger:hover {
-  background-color: rgba(245, 101, 101, 0.1);
-}
-
 .dropdown-divider {
-  height: 1px;
-  background-color: var(--border-color);
-  margin: 8px 0;
+  height: 0;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  border-top: 1px solid var(--border-color);
 }
 
+.dropdown-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.dropdown-footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.dropdown-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header-content {
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .sidebar-toggle,
+  .theme-toggle {
+    padding: 0.375rem;
+  }
+
+  .header-actions {
+    gap: 0.5rem;
+    width: auto;
+  }
+
+  .header-action {
+    padding: 0.375rem;
+  }
+
+  .badge-dot {
+    top: 0.125rem;
+    right: 0.125rem;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.3rem;
+  }
+
+  .dropdown {
+    position: fixed;
+    top: auto !important;
+    right: 0.75rem !important;
+    left: auto !important;
+    min-width: auto;
+    max-width: calc(100vw - 1.5rem);
+    z-index: 9999;
+  }
+
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dropdown {
+    position: fixed;
+    right: 0.5rem !important;
+    left: auto !important;
+    min-width: auto;
+    max-width: calc(100vw - 1rem);
+  }
+}
+
+/* Transiciones de dropdown */
 .dropdown-fade-enter-active,
 .dropdown-fade-leave-active {
   transition: all 0.2s ease;
 }
 
-.dropdown-fade-enter-from,
-.dropdown-fade-leave-to {
+.dropdown-fade-enter-from {
   opacity: 0;
   transform: translateY(-10px);
 }
 
-@media (max-width: 768px) {
-  .header-content {
-    padding: 0.5rem 1rem;
-  }
+.dropdown-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
 
-  .user-name {
-    display: none;
-  }
+/* Dark mode */
+[data-theme='dark'] .header {
+  background: #0d1117;
+  border-bottom-color: #30363d;
+}
 
-  .user-menu {
-    padding: 0.5rem;
-  }
+[data-theme='dark'] .header-content {
+  background: #0d1117;
+  border-bottom-color: #30363d;
+  color: white;
 }
 </style>

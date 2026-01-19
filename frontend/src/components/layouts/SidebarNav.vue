@@ -1,442 +1,584 @@
+<template>
+  <nav :class="['sidebar', { 'sidebar-open': isOpen }]">
+    <div class="sidebar-content" ref="sidebarContentRef" @scroll="handleScroll">
+      <!-- Brand / Logo -->
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon">
+          <IconComponent name="crystal" :size="32"/>
+        </div>
+        <transition name="fade">
+          <span v-if="isOpen" class="sidebar-brand-text">
+            ChurnInsight
+          </span>
+        </transition>
+      </div>
+
+      <!-- Toggle Button (Mobile) -->
+      <button class="sidebar-toggle-btn" @click="$emit('toggle')" aria-label="Cerrar menú">
+        <IconComponent name="x" :size="20" />
+      </button>
+
+      <!-- Navigation -->
+      <ul class="sidebar-nav">
+        <!-- Panel Principal -->
+        <li class="sidebar-header">
+          <span>PRINCIPAL</span>
+        </li>
+
+        <li class="sidebar-item" :class="{ active: isActive('Home') }">
+          <router-link class="sidebar-link" to="/">
+            <IconComponent name="home" :size="20" />
+            <span>Inicio</span>
+          </router-link>
+        </li>
+
+        <li class="sidebar-divider"></li>
+
+        <!-- Predicción -->
+        <li class="sidebar-header">
+          <span>PREDICCIÓN</span>
+        </li>
+
+        <li class="sidebar-item" :class="{ active: isActive('ChurnPrediction') }">
+          <router-link class="sidebar-link" to="/churn">
+            <IconComponent name="pie-chart" :size="20" />
+            <span>Predicción Individual</span>
+          </router-link>
+        </li>
+
+        <li class="sidebar-item">
+          <a class="sidebar-link" @click.prevent="toggleMenu('batch')" :class="{ collapsed: !menus.batch }">
+            <IconComponent name="folder" :size="20" />
+            <span>Importación Lotes</span>
+            <IconComponent name="chevron-right" :size="16" :class="['menu-arrow', { 'rotate-90': menus.batch }]" />
+          </a>
+          <transition name="slide">
+            <ul v-show="menus.batch" class="sidebar-dropdown">
+              <li class="sidebar-item" :class="{ active: isActive('BatchUpload') }">
+                <router-link class="sidebar-link" to="/import-batch">
+                  <IconComponent name="upload" :size="18" />
+                  <span>Cargar Archivo</span>
+                </router-link>
+              </li>
+              <li class="sidebar-item" :class="{ active: isActive('BatchHistory') }">
+                <router-link class="sidebar-link" to="/batch-history">
+                  <IconComponent name="list" :size="18" />
+                  <span>Historial</span>
+                </router-link>
+              </li>
+            </ul>
+          </transition>
+        </li>
+
+        <li class="sidebar-divider"></li>
+
+        <!-- Próximamente -->
+        <li class="sidebar-header">
+          <span>PRÓXIMAMENTE</span>
+        </li>
+
+        <li class="sidebar-item disabled">
+          <a class="sidebar-link" title="Próximamente disponible" aria-disabled="true">
+            <IconComponent name="trending-up" :size="20" />
+            <span>Análisis</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</template>
+
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useSidebarState } from '@/composables/useSidebarState'
+import { ref, onMounted, watch, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
+import IconComponent from '@/components/icons/IconComponents.vue'
 
-const router = useRouter()
-const { sidebarOpen: sidebarVisible, syncWithBreakpoint } = useSidebarState()
+const route = useRoute()
+const sidebarContentRef = ref(null)
 
-// Inicializar el estado cuando monta el componente
-onMounted(() => {
-  // Restaurar estado guardado
-  syncWithBreakpoint()
-
-  // Listener para cambios de tamaño de ventana
-  window.addEventListener('resize', handleWindowResize)
+defineProps({
+  isOpen: {
+    type: Boolean,
+    default: true,
+  },
 })
 
-onUnmounted(() => {
-  window.removeEventListener('resize', handleWindowResize)
-})
+defineEmits(['toggle'])
 
-const handleWindowResize = () => {
-  // Sincronizar estado con breakpoint cuando cambia el tamaño
-  syncWithBreakpoint()
+// Cargar estado de menús desde localStorage
+const loadMenuState = () => {
+  const saved = localStorage.getItem('sidebar-menu-state')
+  if (saved) {
+    try {
+      return JSON.parse(saved)
+    } catch {
+      return getDefaultMenuState()
+    }
+  }
+  return getDefaultMenuState()
 }
 
-const navigateTo = (path) => {
-  router.push(path)
+const getDefaultMenuState = () => ({
+  batch: false,
+})
+
+const menus = ref(loadMenuState())
+
+// Guardar estado de menús en localStorage
+const saveMenuState = () => {
+  localStorage.setItem('sidebar-menu-state', JSON.stringify(menus.value))
+}
+
+// Guardar posición del scroll en localStorage
+const saveSidebarScroll = () => {
+  if (sidebarContentRef.value) {
+    localStorage.setItem('sidebar-scroll-position', sidebarContentRef.value.scrollTop)
+  }
+}
+
+// Restaurar posición del scroll
+const restoreSidebarScroll = async () => {
+  await nextTick()
+  const saved = localStorage.getItem('sidebar-scroll-position')
+  if (saved && sidebarContentRef.value) {
+    sidebarContentRef.value.scrollTop = parseInt(saved, 10)
+  }
+}
+
+// Determinar qué menús deben estar abiertos basado en la ruta actual
+const getMenusForCurrentRoute = () => {
+  const menuMapping = {
+    BatchUpload: 'batch',
+    BatchHistory: 'batch',
+  }
+
+  const menuKey = menuMapping[route.name]
+  return menuKey ? menuKey : null
+}
+
+// Auto-abrir menú basado en la ruta actual
+const syncMenusWithRoute = () => {
+  const menuToOpen = getMenusForCurrentRoute()
+  if (menuToOpen) {
+    menus.value[menuToOpen] = true
+    saveMenuState()
+  }
+  restoreSidebarScroll()
+}
+
+const toggleMenu = (menu) => {
+  menus.value[menu] = !menus.value[menu]
+  saveMenuState()
+  setTimeout(() => {
+    saveSidebarScroll()
+  }, 300)
+}
+
+const isActive = (routeNames) => {
+  if (Array.isArray(routeNames)) {
+    return routeNames.includes(route.name)
+  }
+  return route.name === routeNames
+}
+
+watch(
+  () => route.name,
+  () => {
+    syncMenusWithRoute()
+  },
+)
+
+onMounted(() => {
+  syncMenusWithRoute()
+})
+
+const handleScroll = () => {
+  saveSidebarScroll()
 }
 </script>
 
-<template>
-  <aside
-    :class="['sidebar', { 'sidebar-collapsed': !sidebarVisible }]"
-    :aria-label="sidebarVisible ? 'Navegación expandida' : 'Navegación contraída'"
-  >
-    <!-- Header con Logo -->
-    <div class="sidebar-header">
-      <h1 v-if="sidebarVisible" class="logo">🔮 ChurnInsight</h1>
-      <div v-else class="logo-icon">🔮</div>
-    </div>
-
-    <!-- Navigation Menu -->
-    <nav class="sidebar-nav" aria-label="Menú de navegación">
-      <!-- Inicio -->
-      <router-link
-        to="/"
-        :class="['nav-item', { active: $route.path === '/' }]"
-        :aria-current="$route.path === '/' ? 'page' : undefined"
-        @click="navigateTo('/')"
-        title="Ir a inicio"
-      >
-        <span class="icon" aria-hidden="true">🏠</span>
-        <span v-if="sidebarVisible" class="label">Inicio</span>
-      </router-link>
-
-      <!-- Predicción Churn -->
-      <router-link
-        to="/churn"
-        :class="['nav-item', { active: $route.path === '/churn' }]"
-        :aria-current="$route.path === '/churn' ? 'page' : undefined"
-        @click="navigateTo('/churn')"
-        title="Predicción de Churn"
-      >
-        <span class="icon" aria-hidden="true">📊</span>
-        <span v-if="sidebarVisible" class="label">Predicción Churn</span>
-      </router-link>
-
-      <!-- Importar Lote -->
-      <div
-        to="/import-batch"
-        :class="['nav-item', { active: $route.path === '/import-batch' }]"
-        :aria-current="$route.path === '/import-batch' ? 'page' : undefined"
-        @click="navigateTo('/import-batch')"
-        title="Importar lote"
-      >
-        <span class="icon" aria-hidden="true">📁</span>
-        <span v-if="sidebarVisible" class="label">Importar Lote</span>
-      </div>
-
-      <!-- Próximamente: Análisis -->
-      <div
-        class="nav-item disabled"
-        title="Próximamente disponible"
-        role="menuitem"
-        aria-disabled="true"
-      >
-        <span class="icon" aria-hidden="true">📈</span>
-        <span v-if="sidebarVisible" class="label">Análisis</span>
-      </div>
-    </nav>
-  </aside>
-</template>
-
 <style scoped>
-/* ========================
-   SIDEBAR PRINCIPAL
-   ======================== */
 .sidebar {
-  width: 280px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
   background: var(--bg-white);
   border-right: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.3s ease,
+    width 0.3s ease;
+  z-index: 1000;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  z-index: 100;
-  height: 100vh;
+}
+
+.sidebar-content {
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 0;
+  height: 100%;
 }
 
-.sidebar-collapsed {
-  width: 80px;
-}
-
-/* ========================
-   HEADER & LOGO
-   ======================== */
-.sidebar-header {
-  padding: 24px 16px;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 80px;
-  flex-shrink: 0;
-  transition: all 0.3s ease;
-}
-
-.logo {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: opacity 0.3s ease;
-}
-
-.logo-icon {
-  font-size: 2rem;
-  transition: all 0.3s ease;
-}
-
-/* ========================
-   NAVIGATION MENU
-   ======================== */
-.sidebar-nav {
-  flex: 1;
-  padding: 16px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow-y: auto;
-  transition: all 0.3s ease;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-decoration: none;
-  position: relative;
-  user-select: none;
-}
-
-.nav-item:not(.disabled) {
-  cursor: pointer;
-}
-
-.nav-item:hover:not(.disabled) {
-  background-color: var(--hover-bg);
-  color: var(--primary-color);
-  transform: translateX(4px);
-}
-
-.nav-item:active:not(.disabled) {
-  transform: translateX(2px);
-}
-
-.nav-item.active {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
-  box-shadow: var(--shadow-md);
-  font-weight: 600;
-}
-
-.nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: white;
-  border-radius: 0 3px 3px 0;
-  opacity: 0.8;
-}
-
-.nav-item.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  color: var(--text-tertiary);
-}
-
-.nav-item.disabled:hover {
-  background-color: transparent;
-  transform: none;
-}
-
-.nav-item.disabled::after {
-  content: 'Próximamente';
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-left: 12px;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-  z-index: 1000;
-  box-shadow: var(--shadow-md);
-}
-
-.nav-item.disabled:hover::after {
-  opacity: 1;
-}
-
-.nav-item .icon {
-  font-size: 1.3rem;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-item .label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: all 0.3s ease;
-  flex: 1;
-}
-
-/* ========================
-   SCROLLBAR PERSONALIZADO
-   ======================== */
-.sidebar-nav::-webkit-scrollbar {
+/* Scrollbar Styling */
+.sidebar-content::-webkit-scrollbar {
   width: 6px;
 }
 
-.sidebar-nav::-webkit-scrollbar-track {
+.sidebar-content::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.sidebar-nav::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 3px;
-  transition: background 0.2s;
 }
 
-.sidebar-nav::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
 }
 
-/* ========================
-   RESPONSIVE - TABLET
-   ======================== */
-@media (max-width: 768px) {
+/* Brand */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem 1.25rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  background: var(--bg-white);
+  border-bottom: 1px solid var(--border-color);
+  gap: 0.75rem;
+}
+
+.sidebar-brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.company-logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.sidebar-brand-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Toggle Button */
+.sidebar-toggle-btn {
+  display: none;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: #6c757d;
+  transition: color 0.2s;
+}
+
+.sidebar-toggle-btn:hover {
+  color: #3b7ddd;
+}
+
+/* Navigation */
+.sidebar-nav {
+  list-style: none;
+  padding: 0.75rem 0;
+  margin: 0;
+}
+
+.sidebar-header {
+  padding: 1.25rem 1.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.sidebar-item {
+  position: relative;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 0.75rem;
+}
+
+.sidebar-link:hover {
+  background-color: var(--hover-bg);
+  color: var(--primary-color);
+}
+
+.sidebar-item.active>.sidebar-link {
+  background-color: var(--active-bg);
+  color: var(--primary-color);
+  border-left: 3px solid var(--primary-color);
+  font-weight: 600;
+}
+
+.sidebar-link span:first-of-type {
+  flex: 1;
+}
+
+/* Menu Arrow */
+.menu-arrow {
+  margin-left: auto;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.menu-arrow::before {
+  content: '›';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.menu-arrow.rotate-90 {
+  transform: rotate(90deg);
+}
+
+/* Dropdown */
+.sidebar-dropdown {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: var(--bg-light);
+}
+
+.sidebar-dropdown .sidebar-link {
+  padding: 0.65rem 1.25rem 0.65rem 3rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.sidebar-dropdown .sidebar-link:hover {
+  background-color: var(--hover-bg);
+  color: var(--primary-color);
+}
+
+.sidebar-dropdown .sidebar-item.active .sidebar-link {
+  background-color: var(--active-bg);
+  border-left-color: var(--primary-color);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Badge */
+.sidebar-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+  background-color: var(--danger-color);
+  border-radius: 0.25rem;
+  margin-left: auto;
+}
+
+/* Divider */
+.sidebar-divider {
+  height: 0;
+  margin: 0.75rem 0;
+  overflow: hidden;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Disabled Items */
+.sidebar-item.disabled .sidebar-link {
+  color: var(--disabled-color);
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.sidebar-item.disabled .sidebar-link:hover {
+  background-color: transparent;
+  color: var(--disabled-color);
+}
+
+.sidebar-item.disabled .icon {
+  opacity: 0.6;
+}
+
+/* Animations */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active {
+  animation: slideDown 0.3s ease;
+}
+
+.slide-leave-active {
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  to {
+    max-height: 500px;
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    max-height: 500px;
+    opacity: 1;
+  }
+
+  to {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+/* Sidebar cerrado en desktop */
+.sidebar:not(.sidebar-open) {
+  transform: translateX(-260px);
+}
+
+/* Responsive */
+@media (max-width: 991px) {
   .sidebar {
-    width: 100%;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--border-color);
-    flex-direction: row;
-    min-height: 70px;
-    padding-bottom: 0;
+    transform: translateX(-100%);
   }
 
-  .sidebar-collapsed {
-    width: 100%;
-  }
-
-  /* When expanded on mobile, switch to column to avoid going out of frame */
-  .sidebar:not(.sidebar-collapsed) {
-    flex-direction: column;
-    background: var(--bg-white);
-  }
-
-  .sidebar:not(.sidebar-collapsed) .sidebar-nav {
-    flex-direction: column;
-    overflow-y: auto;
-    width: 100%;
-  }
-
-  .sidebar-header {
-    padding: 16px;
-    border-bottom: none;
-    border-right: 1px solid var(--border-color);
-    min-height: auto;
-    flex-shrink: 0;
-  }
-
-  .logo {
-    font-size: 1.3rem;
-  }
-
-  .logo-icon {
-    font-size: 1.5rem;
-  }
-
-  .sidebar-nav {
-    flex-direction: row;
-    padding: 8px;
-    flex: 1;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 4px;
-  }
-
-  .nav-item {
-    padding: 10px 12px;
-    font-size: 0.85rem;
-    flex-shrink: 0;
-  }
-
-  .nav-item:hover {
+  .sidebar.sidebar-open {
     transform: translateX(0);
-    transform: translateY(-2px);
   }
 
-  .nav-item.disabled::after {
-    display: none;
-  }
-
-  .sidebar-spacer {
-    display: none;
-  }
-
-  .sidebar-toggle {
-    position: relative;
-    transform: none;
-    margin: 0 8px 0 auto;
-    width: 44px;
-    height: 44px;
+  .sidebar-toggle-btn {
+    display: block;
   }
 }
 
-/* ========================
-   RESPONSIVE - MÓVIL
-   ======================== */
-@media (max-width: 480px) {
-  .sidebar {
-    min-height: 60px;
-  }
+/* Dark mode con data-theme */
 
-  .sidebar-header {
-    padding: 12px;
-  }
-
-  .logo {
-    font-size: 1.1rem;
-  }
-
-  .logo-icon {
-    font-size: 1.3rem;
-  }
-
-  .sidebar-nav {
-    padding: 4px;
-    gap: 2px;
-  }
-
-  .nav-item {
-    padding: 8px 10px;
-    font-size: 0.8rem;
-  }
-
-  .nav-item .icon {
-    font-size: 1.1rem;
-  }
-
-  .sidebar-toggle {
-    width: 40px;
-    height: 40px;
-    font-size: 0.9rem;
-  }
+[data-theme='dark'] .sidebar {
+  background: var(--bg-white);
+  border-right-color: var(--border-color);
+  box-shadow: var(--shadow-md);
 }
 
-/* ========================
-   ANIMACIONES SUAVES
-   ======================== */
-@media (prefers-reduced-motion: reduce) {
-  .sidebar,
-  .sidebar-header,
-  .sidebar-nav,
-  .nav-item,
-  .sidebar-toggle,
-  .nav-item .icon,
-  .nav-item .label,
-  .toggle-icon {
-    transition: none !important;
-    animation: none !important;
-  }
+[data-theme='dark'] .sidebar-content {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
-/* ========================
-   TEMAS - SCROLLBAR MÓVIL
-   ======================== */
-@supports selector(::-webkit-scrollbar) {
-  .sidebar-nav {
-    scrollbar-color: var(--border-color) transparent;
-    scrollbar-width: thin;
-  }
+[data-theme='dark'] .sidebar-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme='dark'] .sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+[data-theme='dark'] .sidebar-brand {
+  color: var(--secondary-color);
+  background: var(--bg-white);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme='dark'] .sidebar-header {
+  color: var(--secondary-color);
+}
+
+[data-theme='dark'] .sidebar-link {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .sidebar-link:hover {
+  background-color: var(--hover-bg);
+  color: var(--secondary-color);
+}
+
+[data-theme='dark'] .sidebar-item.active>.sidebar-link {
+  background-color: var(--active-bg);
+  color: var(--secondary-color);
+  border-left-color: var(--secondary-color);
+  font-weight: 600;
+}
+
+[data-theme='dark'] .sidebar-dropdown {
+  background-color: var(--bg-light);
+}
+
+[data-theme='dark'] .sidebar-dropdown .sidebar-link {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .sidebar-dropdown .sidebar-link:hover {
+  background-color: var(--hover-bg);
+  color: var(--secondary-color);
+}
+
+[data-theme='dark'] .sidebar-dropdown .sidebar-item.active .sidebar-link {
+  background-color: var(--active-bg);
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+
+[data-theme='dark'] .sidebar-divider {
+  border-top-color: var(--border-color);
+}
+
+[data-theme='dark'] .sidebar-item.disabled .sidebar-link {
+  color: var(--disabled-color);
+}
+
+[data-theme='dark'] .sidebar-item.disabled .sidebar-link:hover {
+  color: var(--disabled-color);
 }
 </style>

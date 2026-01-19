@@ -1,56 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-import churnService from '../services/churnService'
-
-// --- ESTADO ---
-const formData = ref({
-  client_name: '',
-  email: '',
-  phone: '',
-  antiguedad: 0,
-  contrato: 'Month-to-month',
-  cargos_mensuales: 0,
-  soporte_tecnico: 'No',
-  servicio_internet: 'Fiber optic',
-  metodo_pago: 'Electronic check',
-})
-
-const resultado = ref(null)
-const errores = ref({}) // Objeto para guardar errores de validación
-const cargando = ref(false)
-const errorGeneral = ref(null)
-
-// --- LÓGICA ---
-const enviarPrediccion = async () => {
-  // 1. Resetear estados
-  cargando.value = true
-  resultado.value = null
-  errores.value = {}
-  errorGeneral.value = null
-
-  try {
-    // 2. Llamar al servicio
-    const data = await churnService.predecirChurn(formData.value)
-
-    // 3. ¡Éxito!
-    resultado.value = data
-  } catch (err) {
-    console.error('Error capturado:', err)
-
-    // 4. Manejo de Errores
-    if (err.validationErrors) {
-      // Si Spring Boot nos devolvió errores de validación (400)
-      errores.value = err.validationErrors
-    } else {
-      // Error de conexión o 500
-      errorGeneral.value = err.message || 'Ocurrió un error inesperado. Intente nuevamente.'
-    }
-  } finally {
-    cargando.value = false
-  }
-}
-</script>
-
 <template>
   <div class="container">
     <div class="card">
@@ -182,6 +129,59 @@ const enviarPrediccion = async () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { predecirChurnRequest } from '@/services/churnService'
+
+// --- ESTADO ---
+const formData = ref({
+  client_name: '',
+  email: '',
+  phone: '',
+  antiguedad: 0,
+  contrato: 'Month-to-month',
+  cargos_mensuales: 0,
+  soporte_tecnico: 'No',
+  servicio_internet: 'Fiber optic',
+  metodo_pago: 'Electronic check',
+})
+
+const resultado = ref(null)
+const errores = ref({}) // Objeto para guardar errores de validación
+const cargando = ref(false)
+const errorGeneral = ref(null)
+
+// --- LÓGICA ---
+const enviarPrediccion = async () => {
+  // 1. Resetear estados
+  cargando.value = true
+  resultado.value = null
+  errores.value = {}
+  errorGeneral.value = null
+
+  try {
+    // 2. Llamar al servicio
+    const data = await predecirChurnRequest(formData.value)
+
+    // 3. ¡Éxito!
+    resultado.value = data
+  } catch (err) {
+    console.error('Error capturado:', err)
+
+    // 4. Manejo de Errores
+    if (err.validationErrors) {
+      // Si Spring Boot nos devolvió errores de validación (400)
+      errores.value = err.validationErrors
+    } else {
+      // Error de conexión o 500
+      errorGeneral.value = err.message || 'Ocurrió un error inesperado. Intente nuevamente.'
+    }
+  } finally {
+    cargando.value = false
+  }
+}
+</script>
 
 <style scoped>
 .container {

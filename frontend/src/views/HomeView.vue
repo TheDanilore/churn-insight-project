@@ -1,6 +1,96 @@
+<template>
+  <MainLayout>
+    <div class="home-view">
+      <!-- Progress Bar -->
+      <div class="scroll-progress-bar" :style="{ width: scrollProgress + '%' }"></div>
+
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <div class="bg-effects">
+          <div class="glow-spot top-left"></div>
+          <div class="glow-spot bottom-right"></div>
+          <div class="grid-pattern"></div>
+        </div>
+
+        <div class="hero-container">
+          <div class="system-status">ChurnInsight Predict • v1.0.0</div>
+
+          <h1 class="title">Bienvenido a <span class="brand">ChurnInsight</span></h1>
+
+          <p class="subtitle">
+            Tu centro de control para la retención de clientes. Detecta patrones de fuga con
+            <strong>94% de precisión</strong> usando IA avanzada.
+          </p>
+
+          <div class="model-stats">
+            <div v-for="stat in modelStats" :key="stat.label" class="stat-badge">
+              <span class="stat-emoji">{{ stat.icon }}</span>
+              <div class="stat-content">
+                <div class="stat-label">{{ stat.label }}</div>
+                <div class="stat-value">{{ stat.value }}</div>
+              </div>
+            </div>
+          </div>
+
+          <button @click="irAPrediccion" class="cta-button primary">
+            <span class="button-icon">🔮</span>
+            <span class="button-text">Iniciar Predicción</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Arquitectura Section -->
+      <section class="architecture-section">
+        <div class="section-header">
+          <h2>Arquitectura Integrada</h2>
+          <p>Orquestación con Docker para máxima escalabilidad</p>
+        </div>
+
+        <div class="modules-grid">
+          <div v-for="module in architectureModules" :key="module.title" class="module-card">
+            <div class="module-icon">{{ module.icon }}</div>
+            <h3>{{ module.title }}</h3>
+            <div class="tech-stack">{{ module.tech }}</div>
+            <div class="port-badge">{{ module.port }}</div>
+            <p>{{ module.description }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="features-section">
+        <div class="section-header">
+          <h2>Características Principales</h2>
+          <p>Herramientas poderosas para retener tus mejores clientes</p>
+        </div>
+
+        <div class="features-grid">
+          <div v-for="feature in features" :key="feature.title" class="feature-card">
+            <div class="feature-icon">{{ feature.icon }}</div>
+            <h3>{{ feature.title }}</h3>
+            <p>{{ feature.description }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="cta-section">
+        <h2>Comienza Ahora</h2>
+        <p>Realiza tu primera predicción de churn en segundos</p>
+        <button @click="irAPrediccion" class="cta-button large">
+          <span class="button-icon">🚀</span>
+          <span class="button-text">Ir a Predicción</span>
+        </button>
+      </section>
+    </div>
+  </MainLayout>
+</template>
+
+
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
+import MainLayout from '@/components/layouts/MainLayout.vue'
 
 const router = useRouter()
 const scrollProgress = ref(0)
@@ -93,91 +183,6 @@ const features = [
 ]
 </script>
 
-<template>
-  <div class="home-view">
-    <!-- Progress Bar -->
-    <div class="scroll-progress-bar" :style="{ width: scrollProgress + '%' }"></div>
-
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="bg-effects">
-        <div class="glow-spot top-left"></div>
-        <div class="glow-spot bottom-right"></div>
-        <div class="grid-pattern"></div>
-      </div>
-
-      <div class="hero-container">
-        <div class="system-status">ChurnInsight Predict • v1.0.0</div>
-
-        <h1 class="title">Bienvenido a <span class="brand">ChurnInsight</span></h1>
-
-        <p class="subtitle">
-          Tu centro de control para la retención de clientes. Detecta patrones de fuga con
-          <strong>94% de precisión</strong> usando IA avanzada.
-        </p>
-
-        <div class="model-stats">
-          <div v-for="stat in modelStats" :key="stat.label" class="stat-badge">
-            <span class="stat-emoji">{{ stat.icon }}</span>
-            <div class="stat-content">
-              <div class="stat-label">{{ stat.label }}</div>
-              <div class="stat-value">{{ stat.value }}</div>
-            </div>
-          </div>
-        </div>
-
-        <button @click="irAPrediccion" class="cta-button primary">
-          <span class="button-icon">🔮</span>
-          <span class="button-text">Iniciar Predicción</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- Arquitectura Section -->
-    <section class="architecture-section">
-      <div class="section-header">
-        <h2>Arquitectura Integrada</h2>
-        <p>Orquestación con Docker para máxima escalabilidad</p>
-      </div>
-
-      <div class="modules-grid">
-        <div v-for="module in architectureModules" :key="module.title" class="module-card">
-          <div class="module-icon">{{ module.icon }}</div>
-          <h3>{{ module.title }}</h3>
-          <div class="tech-stack">{{ module.tech }}</div>
-          <div class="port-badge">{{ module.port }}</div>
-          <p>{{ module.description }}</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features-section">
-      <div class="section-header">
-        <h2>Características Principales</h2>
-        <p>Herramientas poderosas para retener tus mejores clientes</p>
-      </div>
-
-      <div class="features-grid">
-        <div v-for="feature in features" :key="feature.title" class="feature-card">
-          <div class="feature-icon">{{ feature.icon }}</div>
-          <h3>{{ feature.title }}</h3>
-          <p>{{ feature.description }}</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-      <h2>Comienza Ahora</h2>
-      <p>Realiza tu primera predicción de churn en segundos</p>
-      <button @click="irAPrediccion" class="cta-button large">
-        <span class="button-icon">🚀</span>
-        <span class="button-text">Ir a Predicción</span>
-      </button>
-    </section>
-  </div>
-</template>
 
 <style scoped>
 /* ========================
@@ -201,6 +206,19 @@ const features = [
   min-height: 100vh;
   background-color: var(--bg-body);
   color: var(--text-primary);
+}
+
+.container-fluid {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 2.5rem 2rem;
+    background: linear-gradient(135deg,
+            var(--tertiary-bg) 0%,
+            var(--white) 50%,
+            var(--tertiary-bg) 100%);
+    min-height: 100vh;
+    background-attachment: fixed;
 }
 
 .section-header {
@@ -278,10 +296,12 @@ const features = [
 }
 
 @keyframes float {
+
   0%,
   100% {
     transform: translate(0, 0);
   }
+
   50% {
     transform: translate(30px, 30px);
   }
@@ -300,6 +320,7 @@ const features = [
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -481,10 +502,12 @@ const features = [
 }
 
 @keyframes iconBounce {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-4px);
   }
