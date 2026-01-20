@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.churninsight.backend.dto.BatchJobDTO;
 
 @Configuration
@@ -17,19 +18,21 @@ public class RedisConfig {
         RedisTemplate<String, BatchJobDTO> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
-        // Serialización de claves (String)
-        StringRedisSerializer stringSerializer = new StringRedisSerializer();
-        template.setKeySerializer(stringSerializer);
-        template.setHashKeySerializer(stringSerializer);
-
-        // Serialización de valores (JSON)
-        Jackson2JsonRedisSerializer<BatchJobDTO> jacksonSerializer = 
-            new Jackson2JsonRedisSerializer<>(BatchJobDTO.class);
+        // 1. Configurar ObjectMapper con soporte para Fechas (Java 8+)
+        // Esto es lo que arregla el error 500 de serialización
         ObjectMapper objectMapper = new ObjectMapper();
-        jacksonSerializer.setObjectMapper(objectMapper);
-        
-        template.setValueSerializer(jacksonSerializer);
-        template.setHashValueSerializer(jacksonSerializer);
+        objectMapper.registerModule(new JavaTimeModule());
+
+        // 2. Configurar el serializador JSON
+        Jackson2JsonRedisSerializer<BatchJobDTO> serializer = new Jackson2JsonRedisSerializer<>(objectMapper,
+                BatchJobDTO.class);
+
+        // 3. Asignar serializadores
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+
+        template.setValueSerializer(serializer);
+        template.setHashValueSerializer(serializer);
 
         template.afterPropertiesSet();
         return template;

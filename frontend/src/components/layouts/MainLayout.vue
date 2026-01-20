@@ -24,9 +24,9 @@
 
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
-import SidebarNav from './SidebarNav.vue'
-import HeaderSection from './HeaderSection.vue'
-import FooterSection from './FooterSection.vue'
+import SidebarNav from '@/components/layouts/SidebarNav.vue'
+import HeaderSection from '@/components/layouts/HeaderSection.vue'
+import FooterSection from '@/components/layouts/FooterSection.vue'
 import { useRouter } from 'vue-router'
 import { useSidebarState } from '@/composables/useSidebarState'
 

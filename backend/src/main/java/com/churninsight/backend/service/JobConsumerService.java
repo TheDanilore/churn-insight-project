@@ -17,87 +17,107 @@ public class JobConsumerService {
     private final QueueService queueService;
     private final PredictionService predictionService;
     private final FileParserService fileParserService;
+    private final BatchService batchService;
 
-    public JobConsumerService(QueueService queueService, PredictionService predictionService, FileParserService fileParserService) {
+    public JobConsumerService(QueueService queueService, PredictionService predictionService,
+            FileParserService fileParserService, BatchService batchService) {
         this.queueService = queueService;
         this.predictionService = predictionService;
         this.fileParserService = fileParserService;
+        this.batchService = batchService;
     }
 
     /**
      * Procesa trabajos de la cola cada 5 segundos
      * Similar a un Laravel Queue Worker
      */
-    @Scheduled(fixedDelay = 5000) // 5 segundos
+    @Scheduled(fixedDelay = 5000) // Cada 5 segundos
     public void processJobs() {
         BatchJobDTO job = queueService.dequeueJob();
 
-        if (job == null) {
-            // Cola vacía, no hacer nada
+        if (job == null)
             return;
-        }
 
         try {
             logger.info("🔄 Procesando trabajo: {} (ID: {})", job.getFileName(), job.getJobId());
             job.markAsProcessing();
             queueService.updateJobStatus(job);
 
-            // Procesar el archivo (CSV o Excel)
+            // Parsear el archivo
+            List<String[]> rows = fileParserService.parseFile(job.getFileContent(), job.getFileName());
+
+            // LISTAS PARA ACUMULAR RESULTADOS (Para guardar en BD después)
+            List<ChurnRequestDTO> batchInputs = new java.util.ArrayList<>();
+            List<ChurnResponseDTO> batchOutputs = new java.util.ArrayList<>();
+
             int totalRecords = 0;
             int processedRecords = 0;
             int failedRecords = 0;
 
-            // Parsear el archivo según su formato
-            List<String[]> rows = fileParserService.parseFile(job.getFileContent(), job.getFileName());
-
             for (int i = 0; i < rows.size(); i++) {
                 String[] values = rows.get(i);
 
-                // Saltar encabezado (primera fila)
-                if (i == 0) {
-                    continue;
-                }
+                if (i == 0)
+                    continue; // Saltar encabezado
 
                 totalRecords++;
 
                 try {
-                    // Validar que tenga al menos 9 columnas (3 info + 6 predicción)
+                    // Validar columnas
                     if (values.length < 9) {
-                        logger.warn("⚠️ Fila {} tiene menos de 9 columnas (encontradas: {})", i + 1, values.length);
                         failedRecords++;
                         continue;
                     }
 
-                    // Crear request DTO - las primeras 3 columnas son info del cliente (opcional)
-                    // Índices: 0=clientName, 1=email, 2=phone, 3=antiguedad, 4=contrato, 5=cargosMensuales, 6=soporteTecnico, 7=servicioInternet, 8=metodoPago
-                    ChurnRequestDTO request = ChurnRequestDTO.of(
-                            Integer.parseInt(values[3].trim()),           // antiguedad
-                            values[4].trim(),                            // contrato
-                            Double.parseDouble(values[5].trim()),        // cargosMensuales
-                            values[6].trim(),                            // soporteTecnico
-                            values[7].trim(),                            // servicioInternet
-                            values[8].trim()                             // metodoPago
-                    );
+                    // 1. EXTRAER DATOS (Incluyendo info del cliente: Indices 0, 1, 2)
+                    String clientName = values[0].trim();
+                    String email = values[1].trim();
+                    String phone = values[2].trim();
 
-                    // Obtener predicción
-                    ChurnResponseDTO response = predictionService.obtenerPrediccion(request);
+                    Integer antiguedad = Integer.parseInt(values[3].trim());
+                    String contrato = values[4].trim();
+                    Double cargos = Double.parseDouble(values[5].trim());
+                    String soporte = values[6].trim();
+                    String internet = values[7].trim();
+                    String pago = values[8].trim();
+
+                    // 2. CREAR DTO COMPLETO (Usamos el método 'of' que incluye datos personales)
+                    ChurnRequestDTO request = ChurnRequestDTO.of(
+                            clientName, email, phone,
+                            antiguedad, contrato, cargos, soporte, internet, pago);
+
+                    // 3. OBTENER PREDICCIÓN
+                    ChurnResponseDTO response = predictionService.calcularPrediccion(request);
+
+                    // 4. GUARDAR EN MEMORIA TEMPORAL
+                    batchInputs.add(request);
+                    batchOutputs.add(response);
+
                     processedRecords++;
 
                 } catch (Exception e) {
-                    logger.error("❌ Error procesando fila {} en trabajo {}: {}", i + 1, job.getJobId(), e.getMessage());
+                    logger.error("❌ Error fila {}: {}", i + 1, e.getMessage());
                     failedRecords++;
                 }
             }
 
-            // Marcar como completado
+            // ✅ 5. GUARDADO MASIVO EN LA BASE DE DATOS
+            if (!batchInputs.isEmpty()) {
+                // Aquí usamos el JobID para etiquetar estos registros
+                batchService.saveBatchResults(batchInputs, batchOutputs, job.getJobId());
+            }
+
+            // Finalizar trabajo
             job.markAsCompleted(totalRecords, processedRecords, failedRecords);
             queueService.updateJobStatus(job);
 
-            logger.info("✅ Trabajo completado: {} - Total: {}, Procesados: {}, Fallidos: {}",
-                    job.getJobId(), totalRecords, processedRecords, failedRecords);
+            queueService.updateJobStatus(job); // Actualiza Redis
+            queueService.updateJobInDatabase(job); // ✅ Actualiza PostgreSQL (Historial)
+
+            logger.info("✅ Trabajo completado: {}", job.getJobId());
 
         } catch (Exception e) {
-            logger.error("❌ Error procesando trabajo {}: {}", job.getJobId(), e.getMessage(), e);
+            logger.error("❌ Error fatal job {}: {}", job.getJobId(), e.getMessage());
             job.markAsFailed(e.getMessage());
             queueService.updateJobStatus(job);
         }

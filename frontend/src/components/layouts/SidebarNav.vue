@@ -60,7 +60,7 @@
                   <span>Cargar Archivo</span>
                 </router-link>
               </li>
-              <li class="sidebar-item" :class="{ active: isActive('BatchHistory') }">
+              <li class="sidebar-item" :class="{ active: isActive(['BatchHistory', 'BatchDetail']) }">
                 <router-link class="sidebar-link" to="/batch-history">
                   <IconComponent name="list" :size="18" />
                   <span>Historial</span>

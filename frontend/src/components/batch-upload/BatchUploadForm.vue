@@ -57,7 +57,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import TemplateDownload from './TemplateDownload.vue'
+import TemplateDownload from '@/components/batch-upload/TemplateDownload.vue'
+import { uploadBatchFileRequest } from '@/services/churnService'
 
 // --- EMITS ---
 const emit = defineEmits(['file-selected', 'job-queued'])
@@ -94,13 +95,19 @@ const handleDrop = (event) => {
   }
 }
 
+// --- VALIDACIÓN ---
 const validateAndSelect = (selectedFile) => {
   error.value = null
 
-  // Validar tipo
-  const validTypes = ['text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel']
+  // Validar Tipo (MIME y Extensión por seguridad)
+  const validTypes = [
+    'text/csv', 
+    'application/vnd.ms-excel', 
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  ]
   const validExtensions = ['.csv', '.xlsx', '.xls']
 
+  // A veces el tipo MIME viene vacío en Windows, así que confiamos también en la extensión
   const hasValidType = validTypes.includes(selectedFile.type)
   const hasValidExtension = validExtensions.some(ext => selectedFile.name.toLowerCase().endsWith(ext))
 
@@ -109,7 +116,7 @@ const validateAndSelect = (selectedFile) => {
     return
   }
 
-  // Validar tamaño (máx 10MB)
+  // Validar Tamaño (Máx 10MB)
   if (selectedFile.size > 10 * 1024 * 1024) {
     error.value = '❌ El archivo no puede exceder 10MB'
     return
@@ -119,6 +126,7 @@ const validateAndSelect = (selectedFile) => {
   emit('file-selected', selectedFile)
 }
 
+// --- SUBIDA (FIXED) ---
 const handleUpload = async () => {
   if (!file.value) return
 
@@ -126,23 +134,14 @@ const handleUpload = async () => {
   error.value = null
 
   try {
-    const formData = new FormData()
-    formData.append('file', file.value)
-    // formData.append('userId', userId) // Si tienes un ID de usuario
-
-    const response = await fetch('/api/v1/predictions/batch', {
-      method: 'POST',
-      body: formData,
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.message || 'Error al procesar el archivo')
-    }
-
-    const data = await response.json()
+    const data = await uploadBatchFileRequest(file.value)
+    
+    // Emitimos el ID para que el componente padre empiece el monitoreo (polling)
     emit('job-queued', data.jobId)
+
   } catch (err) {
+    console.error(err)
+    // El servicio ya lanza el error formateado
     error.value = `❌ ${err.message || 'Error al subir el archivo'}`
   } finally {
     isUploading.value = false

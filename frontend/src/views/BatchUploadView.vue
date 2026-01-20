@@ -38,8 +38,10 @@
         <BatchProgress v-else-if="currentStep === 'processing'" :job-id="jobId" :file-name="fileName"
           :job-status="jobStatus" />
 
-        <!-- PASO 3: RESULTADOS -->
-        <BatchResults v-else-if="currentStep === 'results'" :job-status="jobStatus" @new-upload="handleReset" />
+        <div class="batch-content-results" v-else-if="currentStep === 'results'">
+          <!-- PASO 3: RESULTADOS -->
+          <BatchResults v-if="currentStep === 'results'" :job-status="jobStatus" @new-upload="handleReset" />
+        </div>
       </div>
     </div>
   </MainLayout>
@@ -48,10 +50,11 @@
 
 <script setup>
 import { ref, onUnmounted } from 'vue'
-import BatchUploadForm from '@/components/BatchUploadForm.vue'
-import BatchProgress from '@/components/BatchProgress.vue'
-import BatchResults from '@/components/BatchResults.vue'
+import BatchUploadForm from '@/components/batch-upload/BatchUploadForm.vue'
+import BatchProgress from '@/components/batch-upload/BatchProgress.vue'
+import BatchResults from '@/components/batch/BatchResults.vue'
 import MainLayout from '@/components/layouts/MainLayout.vue'
+import { getJobStatusRequest } from '@/services/churnService'
 
 // --- ESTADO ---
 const currentStep = ref('upload') // 'upload', 'processing', 'results'
@@ -67,6 +70,20 @@ const handleFileSelected = (file) => {
 
 const handleJobQueued = (id) => {
   jobId.value = id
+
+  // Inicializamos el estado del job para mostrar en progreso
+  // Esto evita que el componente de progreso reciba 'null'
+  // y no lance la advertencia mientras espera el primer polling.
+  jobStatus.value = {
+    jobId: id,
+    fileName: fileName.value,
+    status: 'PENDING',
+    totalRecords: 0,
+    processedRecords: 0,
+    failedRecords: 0,
+    message: 'Iniciando...'
+  }
+
   currentStep.value = 'processing'
   startPolling()
 }
@@ -75,18 +92,21 @@ const startPolling = () => {
   // Polling cada 2 segundos
   pollingInterval.value = setInterval(async () => {
     try {
-      const response = await fetch(`/api/v1/predictions/batch/status/${jobId.value}`)
-      if (response.ok) {
-        jobStatus.value = await response.json()
+      // Usamos el servicio (Axios) en lugar de fetch manual.
+      // Esto asegura que use la URL correcta (localhost:8080) y no la del frontend.
+      const data = await getJobStatusRequest(jobId.value)
 
-        // Si el trabajo terminó, detener polling
-        if (jobStatus.value.status === 'COMPLETED' || jobStatus.value.status === 'FAILED') {
-          clearInterval(pollingInterval.value)
-          currentStep.value = 'results'
-        }
+      jobStatus.value = data
+
+      // Si el trabajo terminó, detener polling y avanzar
+      if (data.status === 'COMPLETED' || data.status === 'FAILED') {
+        clearInterval(pollingInterval.value)
+        currentStep.value = 'results'
       }
+
     } catch (error) {
       console.error('Error obteniendo estado:', error)
+      // Opcional: Si falla muchas veces, podrías mostrar un error en pantalla
     }
   }, 2000)
 }
@@ -113,7 +133,7 @@ onUnmounted(() => {
 .batch-container {
   min-height: 100vh;
   background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-white) 100%);
-  padding: 40px 20px;
+  padding: 2rem 2rem;
 }
 
 [data-theme="dark"] .batch-container {
@@ -229,9 +249,13 @@ onUnmounted(() => {
 
 /* CONTENIDO */
 .batch-content {
-  max-width: 900px;
   margin: 0 auto;
   animation: fadeIn 0.4s ease;
+  max-width: 1200px;
+}
+
+.batch-content-results{
+    max-width: none;
 }
 
 @keyframes fadeIn {

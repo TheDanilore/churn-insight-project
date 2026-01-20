@@ -17,6 +17,10 @@ public class PredictionHistory{
     @Column(name = "fecha_registro", nullable = false, updatable = false)
     private LocalDateTime fechaRegistro;
 
+    // Para vincular esta predicción a una carga masiva
+    @Column(name = "job_id")
+    private String jobId;
+
     // --- INFORMACIÓN DEL CLIENTE (Opcional) ---
     @Column(name = "client_name")
     private String clientName;

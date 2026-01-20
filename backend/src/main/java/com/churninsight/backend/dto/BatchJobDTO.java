@@ -1,32 +1,40 @@
 package com.churninsight.backend.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder; // ✅ Recomendado si usas .builder() en el service
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
+@Builder // ✅ Agregado para facilitar la creación en el Service
 @NoArgsConstructor
 @AllArgsConstructor
 public class BatchJobDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String jobId;           // UUID único del trabajo
-    private String fileName;        // Nombre del archivo
-    private byte[] fileContent;     // Contenido del archivo
-    private Long userId;            // Usuario que lo envió
-    private String status;          // PENDING, PROCESSING, COMPLETED, FAILED
-    private Integer totalRecords;   // Total de registros a procesar
+    private String jobId;
+    private String fileName;
+    private byte[] fileContent;
+    private Long userId;
+    private String status;
+    private Integer totalRecords;
     private Integer processedRecords;
     private Integer failedRecords;
+    
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String errorMessage;    // Si falla
+    
+    // ✅ CAMPO NUEVO IMPORTANTE
+    private LocalDateTime completedAt; 
+    
+    private String errorMessage;
 
     public static BatchJobDTO create(String fileName, byte[] fileContent, Long userId) {
         BatchJobDTO job = new BatchJobDTO();
-        job.setJobId(java.util.UUID.randomUUID().toString());
+        job.setJobId(UUID.randomUUID().toString());
         job.setFileName(fileName);
         job.setFileContent(fileContent);
         job.setUserId(userId);
@@ -46,12 +54,20 @@ public class BatchJobDTO implements Serializable {
         this.totalRecords = total;
         this.processedRecords = processed;
         this.failedRecords = failed;
-        this.updatedAt = LocalDateTime.now();
+        
+        // ✅ ACTUALIZAR FECHAS
+        LocalDateTime now = LocalDateTime.now();
+        this.updatedAt = now;
+        this.completedAt = now; // Guardamos la fecha de fin
     }
 
     public void markAsFailed(String error) {
         this.status = "FAILED";
         this.errorMessage = error;
-        this.updatedAt = LocalDateTime.now();
+        
+        // ✅ ACTUALIZAR FECHAS
+        LocalDateTime now = LocalDateTime.now();
+        this.updatedAt = now;
+        this.completedAt = now; // Un fallo también es una finalización
     }
 }
