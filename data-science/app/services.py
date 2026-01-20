@@ -66,7 +66,7 @@ class ChurnModelService:
         return {
             "prevision": "Va a cancelar" if prediction == 1 else "Se queda",
             "probabilidad": round(float(probability), 2),
-            "alerta": "ALTA" if probability >= 0.7 else ("MEDIA" if probability >= 0.5 else "BAJA")
+            "alerta": "ALTA" if probability >= 0.7 else ("MEDIA" if probability > 0.4 else "BAJA")
         }
 
 # Instancia global para no recargar el modelo en cada petición
