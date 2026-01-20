@@ -96,6 +96,7 @@
 			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
 
+<<<<<<< HEAD
 		<!-- Apache POI para soportar Excel -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -123,6 +124,15 @@
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 		</dependency>
+=======
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.12.0</version>
+			<scope>compile</scope>
+		</dependency>
+
+>>>>>>> 36773a780006f1f88e59e2564977abb072723d72
 	</dependencies>
 
 	<build>
