@@ -70,7 +70,7 @@ const pagination = reactive({ currentPage: 0, itemsPerPage: 10 })
 const loadData = async () => {
     loading.value = true
     try {
-        // 1. ✅ PASAMOS LOS FILTROS AL SERVICIO
+        // 1. PASAMOS LOS FILTROS AL SERVICIO
         // El servicio getBatchHistoryRequest(page, size, filters) armará la URL
         const response = await getBatchHistoryRequest(
             pagination.currentPage,

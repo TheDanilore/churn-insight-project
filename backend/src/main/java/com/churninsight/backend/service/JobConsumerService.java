@@ -101,7 +101,7 @@ public class JobConsumerService {
                 }
             }
 
-            // ✅ 5. GUARDADO MASIVO EN LA BASE DE DATOS
+            // 5. GUARDADO MASIVO EN LA BASE DE DATOS
             if (!batchInputs.isEmpty()) {
                 // Aquí usamos el JobID para etiquetar estos registros
                 batchService.saveBatchResults(batchInputs, batchOutputs, job.getJobId());
@@ -112,12 +112,12 @@ public class JobConsumerService {
             queueService.updateJobStatus(job);
 
             queueService.updateJobStatus(job); // Actualiza Redis
-            queueService.updateJobInDatabase(job); // ✅ Actualiza PostgreSQL (Historial)
+            queueService.updateJobInDatabase(job); // Actualiza PostgreSQL (Historial)
 
-            logger.info("✅ Trabajo completado: {}", job.getJobId());
+            logger.info("Trabajo completado: {}", job.getJobId());
 
         } catch (Exception e) {
-            logger.error("❌ Error fatal job {}: {}", job.getJobId(), e.getMessage());
+            logger.error("Error fatal job {}: {}", job.getJobId(), e.getMessage());
             job.markAsFailed(e.getMessage());
             queueService.updateJobStatus(job);
         }

@@ -21,13 +21,13 @@ class ChurnModelService:
 
             # 2. Cargar Modelo
             self.model = joblib.load(model_path)
-            print(f"✅ Modelo cargado: {model_path}")
+            print(f"Modelo cargado: {model_path}")
 
             # 3. Cargar Pipeline (Columnas)
             # Esto es vital para saber el orden exacto que espera el modelo
             pipeline_data = joblib.load(pipeline_path)
             self.feature_columns = pipeline_data['feature_columns']
-            print(f"✅ Pipeline cargado. Columnas esperadas: {len(self.feature_columns)}")
+            print(f"Pipeline cargado. Columnas esperadas: {len(self.feature_columns)}")
             
         except FileNotFoundError as e:
             print(f"❌ ERROR ARCHIVO NO ENCONTRADO: {e}")

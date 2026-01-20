@@ -74,7 +74,6 @@ public class BatchPredictionResponse {
         // Fechas
         response.setProcessedAt(job.getUpdatedAt()); // Último heartbeat / actualización
         
-        // ✅ CORRECCIÓN CRÍTICA: Asignar la fecha de completado
         response.setCompletedAt(job.getCompletedAt()); 
 
         // Lógica visual para el frontend

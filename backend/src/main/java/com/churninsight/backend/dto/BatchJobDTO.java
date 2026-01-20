@@ -1,7 +1,7 @@
 package com.churninsight.backend.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder; // ✅ Recomendado si usas .builder() en el service
+import lombok.Builder; 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.io.Serializable;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@Builder // ✅ Agregado para facilitar la creación en el Service
+@Builder 
 @NoArgsConstructor
 @AllArgsConstructor
 public class BatchJobDTO implements Serializable {
@@ -26,8 +26,6 @@ public class BatchJobDTO implements Serializable {
     
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    
-    // ✅ CAMPO NUEVO IMPORTANTE
     private LocalDateTime completedAt; 
     
     private String errorMessage;
@@ -55,7 +53,6 @@ public class BatchJobDTO implements Serializable {
         this.processedRecords = processed;
         this.failedRecords = failed;
         
-        // ✅ ACTUALIZAR FECHAS
         LocalDateTime now = LocalDateTime.now();
         this.updatedAt = now;
         this.completedAt = now; // Guardamos la fecha de fin
@@ -65,7 +62,6 @@ public class BatchJobDTO implements Serializable {
         this.status = "FAILED";
         this.errorMessage = error;
         
-        // ✅ ACTUALIZAR FECHAS
         LocalDateTime now = LocalDateTime.now();
         this.updatedAt = now;
         this.completedAt = now; // Un fallo también es una finalización

@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.http.MediaType;
-
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Cell;
@@ -54,9 +52,9 @@ public class PredictionController {
                         + "Campos opcionales: client_name (nombre), email, phone. "
                         + "Campos requeridos: antiguedad (0-72), contrato, cargos_mensuales (18.25-118.75), soporte_tecnico, servicio_internet, metodo_pago")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "✅ Predicción exitosa"),
-                        @ApiResponse(responseCode = "400", description = "❌ Datos inválidos (Revisar antigüedad negativa o campos vacíos)"),
-                        @ApiResponse(responseCode = "503", description = "⚠️ Servicio de IA no disponible")
+                        @ApiResponse(responseCode = "200", description = "Predicción exitosa"),
+                        @ApiResponse(responseCode = "400", description = "Datos inválidos (Revisar antigüedad negativa o campos vacíos)"),
+                        @ApiResponse(responseCode = "503", description = "Servicio de IA no disponible")
         })
         @PostMapping
         public ResponseEntity<ChurnResponseDTO> predictChurn(

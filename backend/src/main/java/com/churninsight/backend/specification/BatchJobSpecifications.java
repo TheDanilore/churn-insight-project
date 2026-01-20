@@ -14,7 +14,7 @@ public class BatchJobSpecifications {
 
     public static Specification<BatchJob> withFilters(String status, String format, LocalDate dateFrom, LocalDate dateTo) {
         return (root, query, cb) -> {
-            // ✅ 1. Usamos una lista estándar de Java
+            // 1. Usamos una lista estándar de Java
             List<Predicate> predicates = new ArrayList<>();
 
             // --- FILTRO ESTADO ---
@@ -39,7 +39,7 @@ public class BatchJobSpecifications {
                 predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), dateTo.atTime(LocalTime.MAX)));
             }
 
-            // ✅ 2. Combinamos todo al final
+            // 2. Combinamos todo al final
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }

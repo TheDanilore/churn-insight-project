@@ -39,7 +39,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/predictions") // Buena práctica: Incluye el RECURSO en la base, no solo la versión
@@ -86,9 +85,9 @@ public class BatchController {
                         + "Formato esperado: clientName, email, phone (opcionales), antiguedad, contrato, cargosMensuales, soporteTecnico, servicioInternet, metodoPago (requeridos). "
                         + "Descarga un template en /api/v1/predictions/template/csv o /api/v1/predictions/template/excel")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "202", description = "✅ Archivo encolado correctamente"),
-                        @ApiResponse(responseCode = "400", description = "❌ Archivo inválido (formato no soportado o vacío)"),
-                        @ApiResponse(responseCode = "500", description = "⚠️ Error interno del servidor")
+                        @ApiResponse(responseCode = "202", description = "Archivo encolado correctamente"),
+                        @ApiResponse(responseCode = "400", description = "Archivo inválido (formato no soportado o vacío)"),
+                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
         })
         @PostMapping(value = "/batch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
         public ResponseEntity<BatchPredictionResponse> predictBatch(
@@ -138,7 +137,7 @@ public class BatchController {
 
                         logger.info("📝 Trabajo encolado: {} (ID: {})", fileName, job.getJobId());
 
-                        // 3. ✅ CORRECCIÓN: Usar .queued() pasando el jobId
+                        // 3. CORRECCIÓN: Usar .queued() pasando el jobId
                         return ResponseEntity.accepted()
                                         .body(BatchPredictionResponse.queued(
                                                         job.getJobId(),
