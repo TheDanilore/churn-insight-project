@@ -58,6 +58,12 @@ Lo mismo en la carpeta `frontend/`.
 
     <img width="1919" height="908" alt="Captura de pantalla 2025-12-26 181641" src="https://github.com/user-attachments/assets/90e99641-d68b-42ac-a54b-ae5225ad3617" />
 
+    <img width="1919" height="1079" alt="Captura de pantalla 2026-01-19 221618" src="https://github.com/user-attachments/assets/a9c97166-82d5-485d-9f5a-2fb85750e509" />
+
+    <img width="1919" height="1079" alt="Captura de pantalla 2026-01-19 221650" src="https://github.com/user-attachments/assets/92a38676-ad30-4efc-a730-c1f952b16016" />
+
+    <img width="1919" height="1079" alt="Captura de pantalla 2026-01-19 221704" src="https://github.com/user-attachments/assets/1c019c24-cc66-45ca-9181-e38d5728f226" />
+
 
 4.  **🐍 Desarrollo en DataScience (FastAPI) - Opcional:** (Solo realiza este paso si necesitas modificar el código de Python/IA. Si no, usa el contenedor del paso 1).
     * Entra a la carpeta: `cd data-science`
