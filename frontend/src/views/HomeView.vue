@@ -18,8 +18,7 @@
           <h1 class="title">Bienvenido a <span class="brand">ChurnInsight</span></h1>
 
           <p class="subtitle">
-            Tu centro de control para la retención de clientes. Detecta patrones de fuga con
-            <strong>94% de precisión</strong> usando IA avanzada.
+            Tu centro de control para la retención de clientes. Detecta patrones de fuga usando IA avanzada.
           </p>
 
           <div class="model-stats">
@@ -143,7 +142,6 @@ const architectureModules = [
 ]
 
 const modelStats = [
-  { label: 'Precisión', value: '94%', icon: '🎯' },
   { label: 'Análisis', value: '<200ms', icon: '⚡' },
   { label: 'Seguridad', value: 'Enterprise', icon: '🛡️' },
   { label: 'ML', value: 'Avanzado', icon: '🧠' },
@@ -158,12 +156,7 @@ const features = [
   {
     icon: '🎯',
     title: 'Predicciones Precisas',
-    description: 'Modelo entrenado que alcanza 94% de precisión en identificación de churn',
-  },
-  {
-    icon: '🔐',
-    title: 'Seguridad Enterprise',
-    description: 'Validación estricta de datos con estándares de seguridad internacionales',
+    description: 'Modelo entrenado que alcanza 80% de predicción en identificación de churn',
   },
   {
     icon: '📊',

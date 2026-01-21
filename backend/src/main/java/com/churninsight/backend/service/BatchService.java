@@ -37,7 +37,7 @@ public class BatchService {
 
     private final PredictionHistoryRepository predictionHistoryRepository;
 
-    public BatchService( PredictionHistoryRepository predictionHistoryRepository) {
+    public BatchService(PredictionHistoryRepository predictionHistoryRepository) {
         this.predictionHistoryRepository = predictionHistoryRepository;
     }
 
@@ -84,17 +84,18 @@ public class BatchService {
         predictionHistoryRepository.saveAll(histories);
     }
 
-    public Page<PredictionHistory> getBatchResultsPaged(String jobId, int page, int size, String search, String alerta) {
-    // Ordenamos por probabilidad descendente (los más riesgosos primero)
-    Pageable pageable = PageRequest.of(page, size, Sort.by("probabilidad").descending());
-    
-    // Creamos la especificación
-    Specification<PredictionHistory> spec = PredictionHistorySpecs.getResultsByJob(jobId, search, alerta);
-    
-    return predictionHistoryRepository.findAll(spec, pageable);
-}
+    public Page<PredictionHistory> getBatchResultsPaged(String jobId, int page, int size, String search,
+            String alerta) {
+        // Ordenamos por probabilidad descendente (los más riesgosos primero)
+        Pageable pageable = PageRequest.of(page, size, Sort.by("probabilidad").descending());
 
-   /**
+        // Creamos la especificación
+        Specification<PredictionHistory> spec = PredictionHistorySpecs.getResultsByJob(jobId, search, alerta);
+
+        return predictionHistoryRepository.findAll(spec, pageable);
+    }
+
+    /**
      * Genera un reporte Excel COMPLETO con todos los datos del lote
      */
     public byte[] generateExcelReport(String jobId) throws IOException {
@@ -113,19 +114,19 @@ public class BatchService {
 
             // 2. DEFINIR TODAS LAS COLUMNAS
             String[] headers = {
-                "Nombre Cliente",      // 0
-                "Email",               // 1
-                "Teléfono",            // 2
-                "Antigüedad (Meses)",  // 3
-                "Contrato",            // 4
-                "Cargos Mensuales",    // 5
-                "Soporte Técnico",     // 6
-                "Internet",            // 7
-                "Método Pago",         // 8
-                "Riesgo",              // 9
-                "Probabilidad",        // 10
-                "Resultado",           // 11
-                "Fecha Registro"       // 12
+                    "Nombre Cliente", // 0
+                    "Email", // 1
+                    "Teléfono", // 2
+                    "Antigüedad (Meses)", // 3
+                    "Contrato", // 4
+                    "Cargos Mensuales", // 5
+                    "Soporte Técnico", // 6
+                    "Internet", // 7
+                    "Método Pago", // 8
+                    "Riesgo", // 9
+                    "Probabilidad", // 10
+                    "Resultado", // 11
+                    "Fecha Registro" // 12
             };
 
             Row headerRow = sheet.createRow(0);
@@ -150,7 +151,8 @@ public class BatchService {
                 row.createCell(col++).setCellValue(rowData.getAntiguedad() != null ? rowData.getAntiguedad() : 0);
                 row.createCell(col++).setCellValue(defaultString(rowData.getContrato()));
                 // Formato moneda (double)
-                row.createCell(col++).setCellValue(rowData.getCargosMensuales() != null ? rowData.getCargosMensuales() : 0.0);
+                row.createCell(col++)
+                        .setCellValue(rowData.getCargosMensuales() != null ? rowData.getCargosMensuales() : 0.0);
                 row.createCell(col++).setCellValue(defaultString(rowData.getSoporteTecnico()));
                 row.createCell(col++).setCellValue(defaultString(rowData.getServicioInternet()));
                 row.createCell(col++).setCellValue(defaultString(rowData.getMetodoPago()));
@@ -160,9 +162,10 @@ public class BatchService {
                 // Probabilidad (ej: 0.31)
                 row.createCell(col++).setCellValue(rowData.getProbabilidad() != null ? rowData.getProbabilidad() : 0.0);
                 row.createCell(col++).setCellValue(defaultString(rowData.getResultado())); // "Se queda" / "Se va"
-                
+
                 // --- METADATA ---
-                row.createCell(col++).setCellValue(rowData.getFechaRegistro() != null ? rowData.getFechaRegistro().toString() : "");
+                row.createCell(col++)
+                        .setCellValue(rowData.getFechaRegistro() != null ? rowData.getFechaRegistro().toString() : "");
             }
 
             // 4. AUTO-AJUSTAR ANCHO DE COLUMNAS
