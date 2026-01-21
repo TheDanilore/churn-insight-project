@@ -12,6 +12,7 @@ Este proyecto integra tres tecnologías principales orquestadas con Docker:
 | **Backend** | Java 21 (Spring Boot) | `8080` | API REST y lógica de negocio. |
 | **Data Science** | Python 3.13 (FastAPI) | `8000` | Microservicio de Machine Learning. |
 | **Database** | PostgreSQL 15 | `5432` | Persistencia de datos. |
+| **Redis** | Redis Alpine | `6379` | Cache y Colas. |
 
 ---
 
