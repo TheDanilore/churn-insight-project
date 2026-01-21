@@ -36,7 +36,7 @@ Lo mismo en la carpeta `frontend/`.
 
 1.  **Levanta la Infraestructura (BD + IA):**
     ```bash
-    docker-compose up -d db ai-service
+    docker-compose up -d db ai-service redis
     ```
 
 2.  **Inicia el Backend (Java):**
