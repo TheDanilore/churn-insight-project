@@ -34,7 +34,7 @@ Lo mismo en la carpeta `frontend/`.
 ### 🛠️ Opción A: Desarrollo Híbrido (Recomendado)
 *Usamos Docker solo para la Base de Datos y la IA, mientras corres Java y Vue en tu PC para mayor velocidad.*
 
-1.  **Levanta la Infraestructura (BD + IA):**
+1.  **Levanta la Infraestructura (BD + IA + redis):**
     ```bash
     docker-compose up -d db ai-service redis
     ```
